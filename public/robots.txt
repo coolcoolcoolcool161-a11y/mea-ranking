@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://mea-ranking.pages.dev/sitemap-index.xml
+Sitemap: https://coolcoolcoolcool161-a11y.github.io/mea-ranking/sitemap-index.xml

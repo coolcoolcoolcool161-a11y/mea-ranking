@@ -12,8 +12,8 @@ interface Props {
 }
 
 const { title, description = SITE.description, canonicalPath = '/', ogImage = '/images/hero.jpg', jsonLd, noindex = false } = Astro.props;
-const canonical = new URL(canonicalPath, SITE.siteUrl).toString();
-const ogImageUrl = new URL(ogImage, SITE.siteUrl).toString();
+const canonical = SITE.siteUrl + canonicalPath;
+const ogImageUrl = SITE.siteUrl + ogImage;
 ---
 
 <!doctype html>
@@ -55,16 +55,16 @@ const ogImageUrl = new URL(ogImage, SITE.siteUrl).toString();
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href="/">🎀 {SITE.name}｜特典額ランキング 💖</a>
+        <a class="brand" href="/mea-ranking/">🎀 {SITE.name}｜特典額ランキング 💖</a>
         <nav class="main-nav" aria-label="メインナビゲーション">
-          <a href="/">トップ</a>
-          <a href="/#ranking">ランキング表</a>
-          <a href="/#new-apps">新着アプリ</a>
-          <a href="/categories/point-sites/">ポイントサイト</a>
-          <a href="/categories/sns-video/">SNS・動画</a>
-          <a href="/categories/game-entertainment/">ゲーム・エンタメ</a>
-          <a href="/search/">検索</a>
-          <a href="/faq/">よくある質問</a>
+          <a href="/mea-ranking/">トップ</a>
+          <a href="/mea-ranking/#ranking">ランキング表</a>
+          <a href="/mea-ranking/#new-apps">新着アプリ</a>
+          <a href="/mea-ranking/categories/point-sites/">ポイントサイト</a>
+          <a href="/mea-ranking/categories/sns-video/">SNS・動画</a>
+          <a href="/mea-ranking/categories/game-entertainment/">ゲーム・エンタメ</a>
+          <a href="/mea-ranking/search/">検索</a>
+          <a href="/mea-ranking/faq/">よくある質問</a>
         </nav>
       </div>
     </header>
@@ -77,11 +77,11 @@ const ogImageUrl = new URL(ogImage, SITE.siteUrl).toString();
           ※本ページはPR（紹介リンク・アフィリエイト）を含みます。このページの紹介リンク・紹介コード経由で登録し、所定の条件を満たすと、メア（紹介者）に各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、利用する方の特典が減ったり料金が上乗せされたりすることはありません。特典額・条件は2026年11月19日時点の各サービス公式キャンペーンに基づきます。最新の条件は各公式ページでご確認ください。紹介コードの無言利用OKです。
         </p>
         <nav class="foot-nav" aria-label="フッターナビゲーション">
-          <a href="/ad-disclosure/">広告・紹介報酬に関する表記</a>
-          <a href="/privacy/">プライバシーポリシー</a>
-          <a href="/terms/">利用規約・免責事項</a>
-          <a href="/about/">このブログについて</a>
-          <a href="/contact/">お問い合わせ</a>
+          <a href="/mea-ranking/ad-disclosure/">広告・紹介報酬に関する表記</a>
+          <a href="/mea-ranking/privacy/">プライバシーポリシー</a>
+          <a href="/mea-ranking/terms/">利用規約・免責事項</a>
+          <a href="/mea-ranking/about/">このブログについて</a>
+          <a href="/mea-ranking/contact/">お問い合わせ</a>
         </nav>
         <p class="copyright">© 2026 {SITE.name}｜{SITE.operator}</p>
       </div>

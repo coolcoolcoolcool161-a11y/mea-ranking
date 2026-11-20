@@ -39,7 +39,7 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
   <div class="wrap">
-    <p class="breadcrumb"><a href="/">トップ</a> › {name}</p>
+    <p class="breadcrumb"><a href="/mea-ranking/">トップ</a> › {name}</p>
     <h1>{name}の紹介コード・招待コード一覧</h1>
     <p>{name}の紹介コード・招待コードをまとめて掲載しています。各カードからコードをコピーして、紹介リンクから登録してください。</p>
     <div class="card-grid">
@@ -48,9 +48,9 @@ const jsonLd = {
     <h2>ほかのカテゴリー</h2>
     <ul>
       {CATEGORIES.filter((c) => c.slug !== category).map((c) => (
-        <li><a href={`/categories/${c.slug}/`}>{c.name}</a></li>
+        <li><a href={`/mea-ranking/categories/${c.slug}/`}>{c.name}</a></li>
       ))}
     </ul>
-    <p><a href="/">紹介コード一覧トップへ戻る →</a></p>
+    <p><a href="/mea-ranking/">紹介コード一覧トップへ戻る →</a></p>
   </div>
 </BaseLayout>

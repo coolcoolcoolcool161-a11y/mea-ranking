@@ -31,9 +31,9 @@ const ROW_CONDITIONS: Record<string, string> = {
 
 // ランキング表の行内に表示する公式細型バナー（旧サイトと同じ3枚）
 const ROW_BANNERS: Record<string, { src: string; alt: string }> = {
-  moppy: { src: '/images/banner-official-moppy.jpg', alt: 'モッピー公式バナー' },
-  warau: { src: '/images/banner-official-warau.png', alt: 'ワラウ公式バナー' },
-  hapitas: { src: '/images/banner-official-hapitas.png', alt: 'ハピタス公式バナー' },
+  moppy: { src: '/mea-ranking/images/banner-official-moppy.jpg', alt: 'モッピー公式バナー' },
+  warau: { src: '/mea-ranking/images/banner-official-warau.png', alt: 'ワラウ公式バナー' },
+  hapitas: { src: '/mea-ranking/images/banner-official-hapitas.png', alt: 'ハピタス公式バナー' },
 };
 
 const itemList = [...RANKING].map((r, i) => ({
@@ -87,11 +87,11 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
 <BaseLayout title={title} description={SITE.description} canonicalPath="/" jsonLd={jsonLd}>
   <div class="wrap">
     <div class="hero">
-      <img src="/images/hero.jpg" alt="メアのポイ活×招待コード×紹介系バナー｜お得をもっと身近に、一緒におトクをGETしよう" width="1179" height="393" />
+      <img src="/mea-ranking/images/hero.jpg" alt="メアのポイ活×招待コード×紹介系バナー｜お得をもっと身近に、一緒におトクをGETしよう" width="1179" height="393" />
     </div>
 
     <div class="pr-box">
-      このページは広告（PR）を含みます。掲載している紹介リンク・紹介コードを使って各サービスに登録し、所定の条件を満たすと、メア（紹介者）に、各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、あなたの特典が減ったり、利用料金が上乗せされたりすることはないので安心してね。仕組みと対象範囲は<a href="/ad-disclosure/">「広告・紹介報酬に関する表記」</a>にまとめています。
+      このページは広告（PR）を含みます。掲載している紹介リンク・紹介コードを使って各サービスに登録し、所定の条件を満たすと、メア（紹介者）に、各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、あなたの特典が減ったり、利用料金が上乗せされたりすることはないので安心してね。仕組みと対象範囲は<a href="/mea-ranking/ad-disclosure/">「広告・紹介報酬に関する表記」</a>にまとめています。
     </div>
 
     <p class="article-meta">最終更新：2026年11月19日／特典額・条件は各サービスの紹介キャンペーン内容をもとに掲載しているよ♪ キャンペーンは予告なく変更・終了する場合があるから、登録前に公式ページもチェックしてね💡</p>
@@ -144,7 +144,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
                 <details>
                   <summary>条件・原文を見る ＋</summary>
                   <p>獲得条件と紹介文の原文は、記事ページにまとめています。</p>
-                  <p><a href={`/articles/${r.slug}/`}>{r.name}の記事で条件・原文の全文を見る →</a></p>
+                  <p><a href={`/mea-ranking/articles/${r.slug}/`}>{r.name}の記事で条件・原文の全文を見る →</a></p>
                 </details>
               </td>
               <td><strong>{r.benefit}</strong></td>
@@ -153,7 +153,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
                 {a.data.url ? (
                   <a href={a.data.url} target="_blank" rel="sponsored noopener">登録する</a>
                 ) : (
-                  <a href={`/articles/${r.slug}/`}>詳細を見る</a>
+                  <a href={`/mea-ranking/articles/${r.slug}/`}>詳細を見る</a>
                 )}
               </td>
             </tr>
@@ -161,7 +161,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
         })}
       </tbody>
     </table>
-    <p class="conditions">※特典額は各サービスの紹介キャンペーンの最大値です。達成条件によって実際にもらえる額は変わります。PayPayとエアウォレットは同額（300pt）のため、掲載順はPayPay → エアウォレットとしています。※表内の登録リンク・紹介コードは紹介プログラムのリンク・コードです。経由して登録・条件達成があった場合、メアに紹介報酬が発生します（読者の方の特典額・負担は変わりません）。詳細は<a href="/ad-disclosure/">広告・紹介報酬について</a>をご覧ください。</p>
+    <p class="conditions">※特典額は各サービスの紹介キャンペーンの最大値です。達成条件によって実際にもらえる額は変わります。PayPayとエアウォレットは同額（300pt）のため、掲載順はPayPay → エアウォレットとしています。※表内の登録リンク・紹介コードは紹介プログラムのリンク・コードです。経由して登録・条件達成があった場合、メアに紹介報酬が発生します（読者の方の特典額・負担は変わりません）。詳細は<a href="/mea-ranking/ad-disclosure/">広告・紹介報酬について</a>をご覧ください。</p>
 
     <AdSlot />
 
@@ -178,7 +178,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
         <h3>{CATEGORY_NAMES[cat]}部門</h3>
         <ul>
           {RANKING.filter((r) => r.category === cat).map((r) => (
-            <li><a href={`/articles/${r.slug}/`}>{r.name}</a> {r.benefit}</li>
+            <li><a href={`/mea-ranking/articles/${r.slug}/`}>{r.name}</a> {r.benefit}</li>
           ))}
         </ul>
       </div>
@@ -199,7 +199,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
         <p>{f.a}</p>
       </div>
     ))}
-    <p><a href="/faq/">よくある質問の一覧を見る →</a></p>
+    <p><a href="/mea-ranking/faq/">よくある質問の一覧を見る →</a></p>
 
     <h2 id="sisters">メアの姉妹ブログ 💖 SISTER SITES</h2>
     <p>同じ紹介コードを、違う切り口・違う使い方で紹介している姉妹ブログだよ♪ お好みのスタイルで見てみてね✨</p>
@@ -212,20 +212,20 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
     <h2>📂 カテゴリー</h2>
     <ul>
       {CATEGORIES.map((c) => (
-        <li><a href={`/categories/${c.slug}/`}>{c.name}</a>（{byCategory(c.slug).length}）</li>
+        <li><a href={`/mea-ranking/categories/${c.slug}/`}>{c.name}</a>（{byCategory(c.slug).length}）</li>
       ))}
-      <li><a href="/#ranking">特典ランキング</a>（13）</li>
-      <li><a href="/faq/">よくある質問</a>（6）</li>
+      <li><a href="/mea-ranking/#ranking">特典ランキング</a>（13）</li>
+      <li><a href="/mea-ranking/faq/">よくある質問</a>（6）</li>
     </ul>
 
     <h2>🔥 人気の紹介コード</h2>
     <ul>
-      <li><a href="/articles/freecash/">Freecash 3BQLXB</a> 約1,430円相当</li>
-      <li><a href="/articles/rakuten-mobile/">楽天モバイル</a> 13,000pt</li>
-      <li><a href="/articles/moppy/">モッピー 7xaGA123</a> 7,000P</li>
-      <li><a href="/articles/tiktok/">TikTok 284097117</a> 6,000円分</li>
-      <li><a href="/articles/warau/">ワラウ bEs7</a> 2,500pt</li>
-      <li><a href="/articles/hapitas/">ハピタス INXAHV</a> 2,300円分</li>
+      <li><a href="/mea-ranking/articles/freecash/">Freecash 3BQLXB</a> 約1,430円相当</li>
+      <li><a href="/mea-ranking/articles/rakuten-mobile/">楽天モバイル</a> 13,000pt</li>
+      <li><a href="/mea-ranking/articles/moppy/">モッピー 7xaGA123</a> 7,000P</li>
+      <li><a href="/mea-ranking/articles/tiktok/">TikTok 284097117</a> 6,000円分</li>
+      <li><a href="/mea-ranking/articles/warau/">ワラウ bEs7</a> 2,500pt</li>
+      <li><a href="/mea-ranking/articles/hapitas/">ハピタス INXAHV</a> 2,300円分</li>
     </ul>
 
     <h2>🌐 全媒体の入口</h2>
@@ -233,7 +233,7 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
 
     <h2>🎀 このランキングについて</h2>
     <p>ポイ活が大好きなメアが、私が実際に使っている紹介コードだけを特典額の大きい順に並べたランキングだよ💖 特典額や条件が変わったら随時更新するね♪ まずはトップ3＋Freecashから始めるのがおすすめだよ✨</p>
-    <p><a href="/about/">運営者情報を見る →</a></p>
+    <p><a href="/mea-ranking/about/">運営者情報を見る →</a></p>
 
     <AdSlot />
   </div>

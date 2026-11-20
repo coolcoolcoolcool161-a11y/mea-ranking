@@ -11,7 +11,7 @@ export async function GET() {
     code: a.data.code ?? '',
     title: a.data.title,
     description: a.data.description,
-    url: `/articles/${slugOf(a.id)}/`,
+    url: `/mea-ranking/articles/${slugOf(a.id)}/`,
   }));
   return new Response(JSON.stringify(index), {
     headers: { 'content-type': 'application/json; charset=utf-8' },
