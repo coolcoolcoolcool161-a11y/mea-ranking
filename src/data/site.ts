@@ -7,7 +7,7 @@ export const SITE = {
   description:
     '紹介コード・招待コードの特典額ランキング全19サービス比較。楽天モバイル13,000pt・モッピー7,000P・TikTok 6,000円分・ワラウ最大2,500pt・ハピタス最大2,300P・Freecash約1,430円相当など、特典額の大きい順に並べました。',
   dateModified: '2026-11-19',
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-8BB8V3DRW8',
   xAccount: 'https://x.com/pppppuririn',
   hubUrl:
     'https://coolcoolcoolcool161-a11y.github.io/mea-poikatsu-media/',
