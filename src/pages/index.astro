@@ -1,0 +1,240 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { SITE, CATEGORIES, CATEGORY_NAMES, RANKING, FAQS, SISTER_BLOGS, slugOf } from '../data/site';
+
+const articles = await getCollection('articles');
+const bySlug = new Map(articles.map((a) => [slugOf(a.id), a]));
+const byCategory = (slug: string) => articles.filter((a) => a.data.category === slug);
+const freecash = bySlug.get('freecash')!;
+const muse = bySlug.get('muse')!;
+const newApps = byCategory('new-apps');
+
+// ランキング表の各行に表示する条件の要約（旧サイトの表の文言をそのまま移行）
+const ROW_CONDITIONS: Record<string, string> = {
+  'rakuten-mobile': '初めての申込限定。MNP乗り換えで13,000pt、新規でも12,000pt',
+  moppy: '新規登録＋広告利用5,000P以上達成で最大7,000Pのチャンス',
+  tiktok: '新規登録で6,000円分の報酬獲得チャンス。登録時はWi-Fi OFFで招待URLを直接開くのがコツ',
+  warau: '紹介経由で初回ボーナスが300pt→500ptにアップ。最大2,500ptの大チャンス',
+  hapitas: '登録＋条件達成で最大2,300P（11月限定キャンペーン）',
+  olive: 'エントリー＋Olive契約＋翌月末残高10,000円以上でVポイント1,000円相当',
+  freecash: '紹介リンクから登録して対象ゲームをプレイするだけで報酬GET',
+  'tiktok-lite': '新規登録で1,400円分の報酬獲得チャンス。登録時はWi-Fi OFFで招待URLを直接開くのがコツ',
+  pokekatsu: '新規オープン記念で500円無料＋50円で1,000円分＋LINE連携300円分、合計1,300円分楽しめる',
+  mercari: 'アプリをインストールして登録時に招待コードを入力すると500円分お得にお買い物',
+  paypay: '登録時にコード入力＋対象の支払いで1,000円以上使うと、双方にそれぞれ300pt',
+  airwallet: '紹介リンクから新規登録でPontaポイント300ポイント。銀行口座間の送金が手数料無料',
+  orikuji: '招待コード入力で、招待した人・された人の両方にプレゼント。0円でも楽しめる',
+};
+
+// ランキング表の行内に表示する公式細型バナー（旧サイトと同じ3枚）
+const ROW_BANNERS: Record<string, { src: string; alt: string }> = {
+  moppy: { src: '/images/banner-official-moppy.jpg', alt: 'モッピー公式バナー' },
+  warau: { src: '/images/banner-official-warau.png', alt: 'ワラウ公式バナー' },
+  hapitas: { src: '/images/banner-official-hapitas.png', alt: 'ハピタス公式バナー' },
+};
+
+const itemList = [...RANKING].map((r, i) => ({
+  '@type': 'ListItem',
+  position: i + 1,
+  name: `${r.name} ${r.benefit}`,
+}));
+// ランキング表に載っていない6サービスも一覧に追加（19件）
+const rankedSlugs = new Set(RANKING.map((r) => r.slug));
+const rest = articles
+  .filter((a) => !rankedSlugs.has(slugOf(a.id)))
+  .map((a) => `${a.data.service} ${a.data.code ? `紹介コード ${a.data.code}` : ''} ${a.data.benefit}`);
+rest.forEach((name, i) => {
+  itemList.push({ '@type': 'ListItem', position: RANKING.length + i + 1, name });
+});
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      name: '紹介コード・招待コード特典額ランキング全19サービス比較',
+      description: SITE.description,
+      inLanguage: 'ja',
+      dateModified: SITE.dateModified,
+    },
+    { '@type': 'ItemList', name: '紹介コード特典額ランキング', numberOfItems: 19, itemListElement: itemList },
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQS.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '紹介コードランキング トップ' },
+        { '@type': 'ListItem', position: 2, name: '特典額ランキング' },
+      ],
+    },
+  ],
+};
+
+const title = '紹介コード・招待コード特典額ランキング全19サービス比較｜楽天モバイル13,000pt・モッピー7,000P・Freecash約1,430円相当';
+const top3 = [...RANKING].slice(0, 3);
+const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainment', 'shopping'] as const;
+---
+
+<BaseLayout title={title} description={SITE.description} canonicalPath="/" jsonLd={jsonLd}>
+  <div class="wrap">
+    <div class="hero">
+      <img src="/images/hero.jpg" alt="メアのポイ活×招待コード×紹介系バナー｜お得をもっと身近に、一緒におトクをGETしよう" width="1179" height="393" />
+    </div>
+
+    <div class="pr-box">
+      このページは広告（PR）を含みます。掲載している紹介リンク・紹介コードを使って各サービスに登録し、所定の条件を満たすと、メア（紹介者）に、各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、あなたの特典が減ったり、利用料金が上乗せされたりすることはないので安心してね。仕組みと対象範囲は<a href="/ad-disclosure/">「広告・紹介報酬に関する表記」</a>にまとめています。
+    </div>
+
+    <p class="article-meta">最終更新：2026年11月19日／特典額・条件は各サービスの紹介キャンペーン内容をもとに掲載しているよ♪ キャンペーンは予告なく変更・終了する場合があるから、登録前に公式ページもチェックしてね💡</p>
+
+    <h1>メアの紹介コード・招待コード 特典額ランキング ✨</h1>
+    <p class="lead">
+      こんにちは、メアだよ💖 私が紹介登録でもらえる特典の金額が高い順に、全19サービスをまとめたよ♪ 特典額ランキングの一覧表（13サービス）に加えて、新着ポイ活アプリ5件（サンポ・ぶたまる・ミラポイ・トクエル・dipsファーム）とMuseも紹介しているの✨ 順位・特典額・獲得条件・紹介コード・登録リンクをぜんぶ載せたから、「どれから登録すると一番お得かな？」がひと目で分かるよ🎀
+    </p>
+
+    <div class="stats">
+      <div class="stat"><b>19</b>掲載サービス</div>
+      <div class="stat"><b>13,000pt</b>最高特典額（楽天モバイル）</div>
+      <div class="stat"><b>約1,430円相当</b>イチオシ Freecash の特典</div>
+    </div>
+
+    <AdSlot />
+
+    <h2 id="featured">💚 メアのイチオシ特集</h2>
+    <ServiceCard article={freecash} showBody={true} />
+
+    <h2 id="muse">✨ 新着サービス</h2>
+    <ServiceCard article={muse} showBody={true} />
+
+    <h2 id="top3">特典額トップ3 🏆 TOP 3</h2>
+    <p>まずはこの3つから始めてみてね💖 金額の大きさで選ぶなら、ここが本命だよ✨</p>
+    <div class="card-grid">
+      {top3.map((r) => {
+        const a = bySlug.get(r.slug)!;
+        return <ServiceCard article={a} />;
+      })}
+    </div>
+
+    <h2 id="ranking">全19サービス 特典額ランキング 💖 RANKING TABLE</h2>
+    <p>特典の最大額が高い順に並べたよ（ランキング表は13サービス）♪ 各行の「条件・原文を見る」で、獲得条件と紹介文の原文を確認できるの。コードはボタンひとつでコピーできるから便利だよ✨ 新着ポイ活アプリ5件は、ランキング表のあとの「新着アプリ」コーナーに載せているね🎀</p>
+    <table class="rank-table">
+      <thead>
+        <tr><th>順位</th><th>サービス／獲得条件</th><th>特典額</th><th>紹介コード</th><th>登録</th></tr>
+      </thead>
+      <tbody>
+        {RANKING.map((r) => {
+          const a = bySlug.get(r.slug)!;
+          const banner = ROW_BANNERS[r.slug];
+          return (
+            <tr>
+              <td><span class="rank-badge">{r.rank}位</span></td>
+              <td>
+                <strong>{r.name}</strong> <span class="category">{CATEGORY_NAMES[r.category] ?? r.category}</span>
+                {banner && <div class="row-banner"><img src={banner.src} alt={banner.alt} loading="lazy" /></div>}
+                <div>{ROW_CONDITIONS[r.slug]}</div>
+                <details>
+                  <summary>条件・原文を見る ＋</summary>
+                  <p>獲得条件と紹介文の原文は、記事ページにまとめています。</p>
+                  <p><a href={`/articles/${r.slug}/`}>{r.name}の記事で条件・原文の全文を見る →</a></p>
+                </details>
+              </td>
+              <td><strong>{r.benefit}</strong></td>
+              <td>{a.data.code ? <><code>{a.data.code}</code> <button class="copy-btn" type="button" data-copy={a.data.code}><span class="copy-label">コピー</span></button></> : 'リンク型（コード不要）'}</td>
+              <td>
+                {a.data.url ? (
+                  <a href={a.data.url} target="_blank" rel="sponsored noopener">登録する</a>
+                ) : (
+                  <a href={`/articles/${r.slug}/`}>詳細を見る</a>
+                )}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+    <p class="conditions">※特典額は各サービスの紹介キャンペーンの最大値です。達成条件によって実際にもらえる額は変わります。PayPayとエアウォレットは同額（300pt）のため、掲載順はPayPay → エアウォレットとしています。※表内の登録リンク・紹介コードは紹介プログラムのリンク・コードです。経由して登録・条件達成があった場合、メアに紹介報酬が発生します（読者の方の特典額・負担は変わりません）。詳細は<a href="/ad-disclosure/">広告・紹介報酬について</a>をご覧ください。</p>
+
+    <AdSlot />
+
+    <h2 id="new-apps">新着ポイ活アプリ 🌸 NEW APPS</h2>
+    <p>メアが新しく追加した5つの無料ポイ活アプリだよ💖 ランキングの順位には含めずに、新着としてまとめて紹介しているの♪ どのアプリも招待コードのコピーボタン付きだから、気になったらすぐ始められるよ✨</p>
+    <div class="card-grid">
+      {newApps.map((a) => <ServiceCard article={a} />)}
+    </div>
+
+    <h2 id="catbest">カテゴリ別ランキング 🎀 BY CATEGORY</h2>
+    <p>「やりたいことが決まってる！」って子はこちらから見てね💡 カテゴリの中での特典額順に並べたよ♪</p>
+    {catOrder.map((cat) => (
+      <div>
+        <h3>{CATEGORY_NAMES[cat]}部門</h3>
+        <ul>
+          {RANKING.filter((r) => r.category === cat).map((r) => (
+            <li><a href={`/articles/${r.slug}/`}>{r.name}</a> {r.benefit}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <h2 id="howto">特典のもらい方 💡 HOW TO</h2>
+    <p>どのサービスも基本はこの3ステップだよ♪ メアと一緒にやってみよう💖</p>
+    <ol class="steps">
+      <li><strong>ランキングから選ぶ</strong>：特典額と条件を見比べて、登録したいサービスを決めてね。まずはトップ3＋Freecashがメアのおすすめだよ✨</li>
+      <li><strong>コードをコピー／リンクを開く</strong>：コード入力型はコピーボタンでコードを控えてね。リンク型は「登録する」ボタンからそのまま進めばOKだよ♪</li>
+      <li><strong>登録して条件を達成</strong>：各サービスの条件（登録・利用・支払いなど）を満たすと特典が付与されるよ。条件は各記事ページで確認してね💡</li>
+    </ol>
+
+    <h2 id="faq">よくある質問 ❓ FAQ</h2>
+    {FAQS.map((f) => (
+      <div class="faq-item">
+        <h3>{f.q}</h3>
+        <p>{f.a}</p>
+      </div>
+    ))}
+    <p><a href="/faq/">よくある質問の一覧を見る →</a></p>
+
+    <h2 id="sisters">メアの姉妹ブログ 💖 SISTER SITES</h2>
+    <p>同じ紹介コードを、違う切り口・違う使い方で紹介している姉妹ブログだよ♪ お好みのスタイルで見てみてね✨</p>
+    <ul>
+      {SISTER_BLOGS.map((b) => (
+        <li><a href={b.url} target="_blank" rel="noopener">{b.name}</a>：{b.note}</li>
+      ))}
+    </ul>
+
+    <h2>📂 カテゴリー</h2>
+    <ul>
+      {CATEGORIES.map((c) => (
+        <li><a href={`/categories/${c.slug}/`}>{c.name}</a>（{byCategory(c.slug).length}）</li>
+      ))}
+      <li><a href="/#ranking">特典ランキング</a>（13）</li>
+      <li><a href="/faq/">よくある質問</a>（6）</li>
+    </ul>
+
+    <h2>🔥 人気の紹介コード</h2>
+    <ul>
+      <li><a href="/articles/freecash/">Freecash 3BQLXB</a> 約1,430円相当</li>
+      <li><a href="/articles/rakuten-mobile/">楽天モバイル</a> 13,000pt</li>
+      <li><a href="/articles/moppy/">モッピー 7xaGA123</a> 7,000P</li>
+      <li><a href="/articles/tiktok/">TikTok 284097117</a> 6,000円分</li>
+      <li><a href="/articles/warau/">ワラウ bEs7</a> 2,500pt</li>
+      <li><a href="/articles/hapitas/">ハピタス INXAHV</a> 2,300円分</li>
+    </ul>
+
+    <h2>🌐 全媒体の入口</h2>
+    <p><a href={SITE.hubUrl} target="_blank" rel="noopener">メアのポイ活メディア（トップページ）</a> — ホームページ・ブログ・掲示板・note・Xなど、メアの媒体はここからたどれます♪</p>
+
+    <h2>🎀 このランキングについて</h2>
+    <p>ポイ活が大好きなメアが、私が実際に使っている紹介コードだけを特典額の大きい順に並べたランキングだよ💖 特典額や条件が変わったら随時更新するね♪ まずはトップ3＋Freecashから始めるのがおすすめだよ✨</p>
+    <p><a href="/about/">運営者情報を見る →</a></p>
+
+    <AdSlot />
+  </div>
+</BaseLayout>

@@ -1,0 +1,54 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import { CATEGORY_NAMES, slugOf } from '../data/site';
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+  showBody?: boolean;
+}
+
+const { article, showBody = false } = Astro.props;
+const { data } = article;
+const { Content } = await render(article);
+---
+
+<article class="service-card" id={slugOf(article.id)}>
+  <span class="category">{CATEGORY_NAMES[data.category] ?? data.category}</span>
+  <h3>
+    <a href={`/articles/${slugOf(article.id)}/`}>{data.service}</a>
+  </h3>
+  <p class="benefit">{data.benefit}</p>
+  <p class="desc">{data.description}</p>
+  {data.points && (
+    <ul class="points">
+      {data.points.map((p) => <li>{p}</li>)}
+    </ul>
+  )}
+  {data.image && (
+    <img class="banner" src={data.image} alt={data.imageAlt ?? `${data.service}の紹介バナー`} loading="lazy" />
+  )}
+  {data.code ? (
+    <div class="code-row">
+      <code>{data.code}</code>
+      <button class="copy-btn" type="button" data-copy={data.code}>
+        <span class="copy-label">コピー</span>
+      </button>
+    </div>
+  ) : (
+    <p class="conditions">紹介コードはありません。紹介リンクから登録してください。</p>
+  )}
+  {showBody && <Content />}
+  {data.url ? (
+    <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener">
+      {data.service}に紹介登録する →
+    </a>
+  ) : data.officialSite ? (
+    <a class="register-btn" href={data.officialSite} target="_blank" rel="noopener">
+      {data.service}公式サイトを見る →
+    </a>
+  ) : (
+    <p class="conditions">※{data.service}は招待コードのみの紹介です。アプリ・サイト内でコードを入力してください。</p>
+  )}
+  {data.prNote && <p class="pr-note">{data.prNote}</p>}
+</article>

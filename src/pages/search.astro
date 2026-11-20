@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout
+  title={`紹介コード検索｜${SITE.name}`}
+  description="サービス名・紹介コード・特典から紹介コードを検索できます。全19サービス対象。"
+  canonicalPath="/search/"
+>
+  <div class="wrap">
+    <p class="breadcrumb"><a href="/">トップ</a> › 検索</p>
+    <h1>紹介コード検索</h1>
+    <p>サービス名・紹介コード・特典のキーワードで検索できます。全19サービスが対象です。</p>
+    <div class="search-box">
+      <input id="q" type="search" placeholder="例：ワラウ / 3BQLXB / ゲーム" aria-label="検索キーワード" />
+    </div>
+    <p class="search-note" id="count">キーワードを入力してください。</p>
+    <div class="card-grid" id="results"></div>
+    <p><a href="/">紹介コード一覧トップへ戻る →</a></p>
+  </div>
+  <script>
+    const input = document.getElementById('q');
+    const results = document.getElementById('results');
+    const count = document.getElementById('count');
+    let index = [];
+    fetch('/search-index.json')
+      .then((r) => r.json())
+      .then((d) => { index = d; });
+    function render(list) {
+      count.textContent = list.length === 0 ? '見つかりませんでした。別のキーワードでお試しください。' : `${list.length}件見つかりました。`;
+      results.innerHTML = list.map((a) => `
+        <article class="service-card">
+          <span class="category">${a.category}</span>
+          <h3><a href="${a.url}">${a.service}</a></h3>
+          <p class="benefit">${a.benefit}</p>
+          <p class="desc">${a.description}</p>
+          ${a.code ? `<div class="code-row"><code>${a.code}</code><button class="copy-btn" type="button" data-copy="${a.code}"><span class="copy-label">コピー</span></button></div>` : ''}
+          <a class="register-btn" href="${a.url}">詳細を見る →</a>
+        </article>`).join('');
+    }
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { results.innerHTML = ''; count.textContent = 'キーワードを入力してください。'; return; }
+      const list = index.filter((a) =>
+        (a.service + ' ' + a.code + ' ' + a.benefit + ' ' + a.title + ' ' + a.description).toLowerCase().includes(q));
+      render(list);
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+import { SITE } from '../data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalPath?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const { title, description = SITE.description, canonicalPath = '/', ogImage = '/images/hero.jpg', jsonLd, noindex = false } = Astro.props;
+const canonical = new URL(canonicalPath, SITE.siteUrl).toString();
+const ogImageUrl = new URL(ogImage, SITE.siteUrl).toString();
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.operator} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    {SITE.gaMeasurementId !== '' && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.gaMeasurementId}`}></script>
+        <script define:vars={{ gaId: SITE.gaMeasurementId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="/">🎀 {SITE.name}｜特典額ランキング 💖</a>
+        <nav class="main-nav" aria-label="メインナビゲーション">
+          <a href="/">トップ</a>
+          <a href="/#ranking">ランキング表</a>
+          <a href="/#new-apps">新着アプリ</a>
+          <a href="/categories/point-sites/">ポイントサイト</a>
+          <a href="/categories/sns-video/">SNS・動画</a>
+          <a href="/categories/game-entertainment/">ゲーム・エンタメ</a>
+          <a href="/search/">検索</a>
+          <a href="/faq/">よくある質問</a>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p class="pr-note">
+          ※本ページはPR（紹介リンク・アフィリエイト）を含みます。このページの紹介リンク・紹介コード経由で登録し、所定の条件を満たすと、メア（紹介者）に各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、利用する方の特典が減ったり料金が上乗せされたりすることはありません。特典額・条件は2026年11月19日時点の各サービス公式キャンペーンに基づきます。最新の条件は各公式ページでご確認ください。紹介コードの無言利用OKです。
+        </p>
+        <nav class="foot-nav" aria-label="フッターナビゲーション">
+          <a href="/ad-disclosure/">広告・紹介報酬に関する表記</a>
+          <a href="/privacy/">プライバシーポリシー</a>
+          <a href="/terms/">利用規約・免責事項</a>
+          <a href="/about/">このブログについて</a>
+          <a href="/contact/">お問い合わせ</a>
+        </nav>
+        <p class="copyright">© 2026 {SITE.name}｜{SITE.operator}</p>
+      </div>
+    </footer>
+    <script>
+      // 紹介コードのコピーボタン（全ページ共通）
+      document.addEventListener('click', async (e) => {
+        const btn = (e.target as HTMLElement).closest('[data-copy]') as HTMLElement | null;
+        if (!btn) return;
+        const code = btn.getAttribute('data-copy') || '';
+        try {
+          await navigator.clipboard.writeText(code);
+          const label = btn.querySelector('.copy-label');
+          if (label) {
+            label.textContent = 'コピーしました ✓';
+            setTimeout(() => { label.textContent = 'コピー'; }, 2000);
+          }
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = code;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+      });
+    </script>
+  </body>
+</html>

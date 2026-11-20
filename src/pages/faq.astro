@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, FAQS } from '../data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title={`よくある質問｜${SITE.name}`}
+  description="紹介コード・ポイ活のよくある質問6件。特典額が一番大きい紹介コード、コードの入力場所、Freecashがイチオシの理由など。"
+  canonicalPath="/faq/"
+  jsonLd={jsonLd}
+>
+  <div class="wrap">
+    <p class="breadcrumb"><a href="/">トップ</a> › よくある質問</p>
+    <h1>よくある質問｜紹介コード・ポイ活の疑問</h1>
+    {FAQS.map((f) => (
+      <div class="faq-item">
+        <h3>{f.q}</h3>
+        <p>{f.a}</p>
+      </div>
+    ))}
+    <p><a href="/">紹介コード一覧トップへ戻る →</a></p>
+  </div>
+</BaseLayout>

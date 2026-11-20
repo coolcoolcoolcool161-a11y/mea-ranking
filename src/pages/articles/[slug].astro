@@ -1,0 +1,75 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { SITE, CATEGORY_NAMES, slugOf } from '../../data/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({ params: { slug: slugOf(article.id) }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const { data } = article;
+const all = await getCollection('articles');
+const related = all.filter((a) => a.data.category === data.category && a.id !== article.id);
+const others = all.filter((a) => a.data.category !== data.category && a.id !== article.id).slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Article',
+      headline: data.title,
+      description: data.description,
+      inLanguage: 'ja',
+      author: { '@type': 'Person', name: SITE.operator },
+      dateModified: data.dateModified,
+      mainEntityOfPage: `${SITE.siteUrl}/articles/${slugOf(article.id)}/`,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '紹介コードランキング トップ', item: SITE.siteUrl + '/' },
+        { '@type': 'ListItem', position: 2, name: CATEGORY_NAMES[data.category] ?? data.category, item: `${SITE.siteUrl}/categories/${data.category}/` },
+        { '@type': 'ListItem', position: 3, name: data.service },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout title={`${data.title}｜${SITE.name}`} description={data.description} canonicalPath={`/articles/${slugOf(article.id)}/`} ogImage={data.image ?? '/images/hero.jpg'} jsonLd={jsonLd}>
+  <div class="wrap article-body">
+    <p class="breadcrumb"><a href="/">トップ</a> › <a href={`/categories/${data.category}/`}>{CATEGORY_NAMES[data.category] ?? data.category}</a> › {data.service}</p>
+
+    <h1>{data.title}</h1>
+    <p class="article-meta">最終更新：{data.dateModified}｜運営者：{SITE.operator}</p>
+
+    <AdSlot />
+
+    <ServiceCard article={article} />
+
+    <div class="article-extra">
+      <Content />
+    </div>
+
+    <AdSlot />
+
+    <section class="related">
+      <h2>関連記事｜{CATEGORY_NAMES[data.category] ?? data.category}の紹介コード</h2>
+      <div class="card-grid">
+        {related.map((a) => <ServiceCard article={a} />)}
+      </div>
+      <h3>ほかのサービスも見る</h3>
+      <ul>
+        {others.map((a) => (
+          <li><a href={`/articles/${slugOf(a.id)}/`}>{a.data.service}の紹介コード {a.data.code ?? ''}</a>（{a.data.benefit}）</li>
+        ))}
+      </ul>
+      <p><a href="/">紹介コード一覧トップへ戻る →</a></p>
+    </section>
+  </div>
+</BaseLayout>

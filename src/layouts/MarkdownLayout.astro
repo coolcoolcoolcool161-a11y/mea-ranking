@@ -1,0 +1,17 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { SITE } from '../data/site';
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout
+  title={`${frontmatter.title}｜${SITE.name}`}
+  description={frontmatter.description}
+  canonicalPath={frontmatter.canonicalPath}
+>
+  <div class="wrap legal">
+    <p class="breadcrumb"><a href="/">トップ</a> › {frontmatter.title}</p>
+    <h1>{frontmatter.title}</h1>
+    <slot />
+  </div>
+</BaseLayout>

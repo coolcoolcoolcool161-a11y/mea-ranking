@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { SITE, CATEGORIES, CATEGORY_NAMES } from '../../data/site';
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((c) => ({ params: { category: c.slug } }));
+}
+
+const { category } = Astro.params;
+const name = CATEGORY_NAMES[category] ?? category;
+const articles = (await getCollection('articles')).filter((a) => a.data.category === category);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      name: `${name}の紹介コード・招待コード一覧`,
+      description: `${name}の紹介コード・招待コードをまとめて掲載。特典額・条件・登録リンク付き。`,
+      inLanguage: 'ja',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: '紹介コードランキング トップ', item: SITE.siteUrl + '/' },
+        { '@type': 'ListItem', position: 2, name },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${name}の紹介コード・招待コード一覧｜${SITE.name}`}
+  description={`${name}の紹介コード・招待コードをまとめて掲載。特典額・条件・登録リンク付き。`}
+  canonicalPath={`/categories/${category}/`}
+  jsonLd={jsonLd}
+>
+  <div class="wrap">
+    <p class="breadcrumb"><a href="/">トップ</a> › {name}</p>
+    <h1>{name}の紹介コード・招待コード一覧</h1>
+    <p>{name}の紹介コード・招待コードをまとめて掲載しています。各カードからコードをコピーして、紹介リンクから登録してください。</p>
+    <div class="card-grid">
+      {articles.map((a) => <ServiceCard article={a} />)}
+    </div>
+    <h2>ほかのカテゴリー</h2>
+    <ul>
+      {CATEGORIES.filter((c) => c.slug !== category).map((c) => (
+        <li><a href={`/categories/${c.slug}/`}>{c.name}</a></li>
+      ))}
+    </ul>
+    <p><a href="/">紹介コード一覧トップへ戻る →</a></p>
+  </div>
+</BaseLayout>
