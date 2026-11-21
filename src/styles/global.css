@@ -416,3 +416,23 @@ tbody tr:hover { background: #fff0f5; }
 }
 .rank-table summary { transition: color .18s; }
 .rank-table summary:hover { color: var(--color-primary-dark); }
+
+/* === 可読性ルール v3（2026-11-21 TEXT_DISPLAY_RULES.md） === */
+/* 段落間隔は行間（0.75em）より大きくし、段落の切れ目を見えるようにする */
+.article-extra p, .legal p { margin: 0 0 1.1em; }
+.article-extra ul, .article-extra ol { margin: 0.8em 0 1.1em; padding-left: 1.5em; }
+.article-extra li { margin: 0.4em 0; }
+.article-extra li > ul, .article-extra li > ol { margin: 0.4em 0; }
+.article-extra li > p { margin: 0 0 0.4em; }
+.article-extra blockquote {
+  margin: 1.2em 0; padding: 12px 16px;
+  background: var(--color-primary-soft);
+  border-left: 4px solid var(--color-primary-line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.article-extra blockquote p { margin: 0 0 0.6em; }
+.article-extra blockquote p:last-child { margin-bottom: 0; }
+.article-extra { overflow-wrap: break-word; }
+/* カード内・FAQ内の h2 は見出し装飾を持たない小見出しとして扱う（階層統一のため h2 化した箇所） */
+.service-card h2 { font-size: 1.15rem; margin: 0; border-bottom: none; padding-bottom: 0; background: none; line-height: var(--leading-heading); }
+.faq-item h2 { font-size: var(--text-h3); margin: 0 0 6px; border-bottom: none; padding-bottom: 0; background: none; line-height: var(--leading-heading); }

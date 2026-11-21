@@ -32,7 +32,7 @@ import { SITE } from '../data/site';
       results.innerHTML = list.map((a) => `
         <article class="service-card">
           <span class="category">${a.category}</span>
-          <h3><a href="${a.url}">${a.service}</a></h3>
+          <h2><a href="${a.url}">${a.service}</a></h2>
           <p class="benefit">${a.benefit}</p>
           <p class="desc">${a.description}</p>
           ${a.code ? `<div class="code-row"><code>${a.code}</code><button class="copy-btn" type="button" data-copy="${a.code}"><span class="copy-label">コピー</span></button></div>` : ''}

@@ -43,7 +43,7 @@ const jsonLd = {
     <h1>{name}の紹介コード・招待コード一覧</h1>
     <p>{name}の紹介コード・招待コードをまとめて掲載しています。各カードからコードをコピーして、紹介リンクから登録してください。</p>
     <div class="card-grid">
-      {articles.map((a) => <ServiceCard article={a} />)}
+      {articles.map((a) => <ServiceCard article={a} headingLevel={2} />)}
     </div>
     <h2>ほかのカテゴリー</h2>
     <ul>
