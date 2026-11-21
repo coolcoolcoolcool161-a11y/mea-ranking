@@ -15,6 +15,8 @@ image: "https://coolcoolcoolcool161-a11y.github.io/mea-poikatsu-blog/images/bann
 
 特典額ランキング3位、動画・SNS部門では1位。世界中で人気のショート動画アプリで、新規登録で6,000円分の報酬獲得チャンスがあります。4位のワラウ（最大2,500pt）の2倍以上の金額で、トップ3に入る本命のひとつです。
 
+![TikTokの招待特典（最大6,000円分）の案内画像](/images/tiktok-promo-mea.webp)
+
 ## 紹介特典
 
 - **新規登録で6,000円分の報酬獲得チャンス**
