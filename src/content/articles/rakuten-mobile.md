@@ -7,6 +7,7 @@ benefit: "最大13,000pt"
 url: "https://r10.to/hgZk3d"
 dateModified: "2026-11-19"
 rank: 1
+image: "https://coolcoolcoolcool161-a11y.github.io/mea-poikatsu-blog/images/banner-rakuten.jpg"
 ---
 
 ## ランキングでの順位：1位

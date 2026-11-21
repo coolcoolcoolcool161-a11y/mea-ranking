@@ -8,6 +8,7 @@ code: "284097117"
 url: "https://www.tiktok.com/d/2/ZS9f73DUaTHEE-3fczb/"
 dateModified: "2026-11-19"
 rank: 3
+image: "https://coolcoolcoolcool161-a11y.github.io/mea-poikatsu-blog/images/banner-tiktok.jpg"
 ---
 
 ## ランキングでの順位：3位
