@@ -13,6 +13,8 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const { Content } = await render(article);
 const { data } = article;
+
+const BOARD_SLUGS = new Set(['freecash', 'warau', 'hapitas', 'moppy', 'tiktok', 'tiktok-lite', 'orikuji', 'pokekatsu', 'muse', 'sampo', 'butamaru', 'mirapoi', 'tokueru', 'dips']);
 const all = await getCollection('articles');
 const related = all.filter((a) => a.data.category === data.category && a.id !== article.id);
 const others = all.filter((a) => a.data.category !== data.category && a.id !== article.id).slice(0, 3);
@@ -51,11 +53,44 @@ const jsonLd = {
 
     <AdSlot />
 
-    <ServiceCard article={article} />
+    <ServiceCard article={article} detailLink={false} ctaPosition="article_top" />
 
     <div class="article-extra">
       <Content />
     </div>
+
+    <section class="article-end-cta">
+      <h2>{data.service}の特典と紹介コード</h2>
+      <div class="benefit-badge">
+        <span class="benefit-label">登録者特典</span>
+        <span class="benefit-value">{data.benefit}</span>
+      </div>
+      {data.code ? (
+        <div class="code-row">
+          <code>{data.code}</code>
+          <button class="copy-btn" type="button" data-copy={data.code} data-service={slugOf(article.id)}>
+            <span class="copy-label">コピー</span>
+          </button>
+        </div>
+      ) : (
+        <p class="conditions">紹介コードはありません。紹介リンクから登録してください。</p>
+      )}
+      <p class="conditions">条件・注意事項は上の記事本文で確認してから登録してください。</p>
+      {data.url ? (
+        <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener" data-service={slugOf(article.id)} data-position="article_bottom">
+          無料で登録する
+        </a>
+      ) : data.officialSite ? (
+        <a class="register-btn" href={data.officialSite} target="_blank" rel="noopener" data-service={slugOf(article.id)} data-position="article_bottom">
+          公式サイトを見る
+        </a>
+      ) : (
+        <p class="conditions">※{data.service}は招待コードのみの紹介です。アプリ・サイト内でコードを入力してください。</p>
+      )}
+      {BOARD_SLUGS.has(slugOf(article.id)) && (
+        <p><a href={`https://coolcoolcoolcool161-a11y.github.io/mea-keijiban/service/${slugOf(article.id)}/`} target="_blank" rel="noopener">みんなのコードも見る（掲示板）</a></p>
+      )}
+    </section>
 
     <AdSlot />
 

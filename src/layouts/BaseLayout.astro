@@ -82,18 +82,51 @@ const ogImageUrl = SITE.siteUrl + ogImage;
           <a href="/mea-ranking/terms/">利用規約・免責事項</a>
           <a href="/mea-ranking/about/">このブログについて</a>
           <a href="/mea-ranking/contact/">お問い合わせ</a>
+          <a href={SITE.hubUrl} target="_blank" rel="noopener">総合案内（ハブ）</a>
         </nav>
         <p class="copyright">© 2026 {SITE.name}｜{SITE.operator}</p>
       </div>
     </footer>
     <script>
-      // 紹介コードのコピーボタン（全ページ共通）
+      // 紹介コードのコピーボタン（全ページ共通）とGA4クリック計測（CRO_STRATEGY.md §6）
+      const gaPageType = (() => {
+        const p = location.pathname;
+        if (p.includes('/articles/')) return 'article';
+        if (p.includes('/service/')) return 'board';
+        if (p === '/mea-poikatsu-media/') return 'hub';
+        return 'card';
+      })();
+      const gaServiceFromPath = () => {
+        const m = location.pathname.match(/\/(?:articles|service)\/([^/]+)\//);
+        return m ? m[1] : '';
+      };
+      const sendGaEvent = (name: string, params: Record<string, string>) => {
+        const w = window as unknown as { gtag?: (type: string, eventName: string, eventParams: Record<string, string>) => void };
+        if (typeof w.gtag === 'function') w.gtag('event', name, params);
+      };
       document.addEventListener('click', async (e) => {
-        const btn = (e.target as HTMLElement).closest('[data-copy]') as HTMLElement | null;
+        const target = e.target as HTMLElement;
+        const anchor = target.closest('a') as HTMLAnchorElement | null;
+        if (anchor) {
+          const href = anchor.getAttribute('href') || '';
+          if (href.includes('mea-keijiban')) {
+            sendGaEvent('board_click', { from_site: location.hostname });
+          }
+          const relTokens = (anchor.getAttribute('rel') || '').split(/\s+/);
+          if (relTokens.includes('sponsored')) {
+            sendGaEvent('referral_click', { service: anchor.getAttribute('data-service') || gaServiceFromPath(), page_type: gaPageType });
+          }
+          if (anchor.classList.contains('register-btn') || anchor.classList.contains('btn-primary')) {
+            sendGaEvent('cta_click', { service: anchor.getAttribute('data-service') || gaServiceFromPath(), position: anchor.getAttribute('data-position') || 'card' });
+          }
+        }
+        const btn = target.closest('[data-copy]') as HTMLElement | null;
         if (!btn) return;
         const code = btn.getAttribute('data-copy') || '';
+        const copied = () => sendGaEvent('code_copy', { service: btn.getAttribute('data-service') || gaServiceFromPath() });
         try {
           await navigator.clipboard.writeText(code);
+          copied();
           const label = btn.querySelector('.copy-label');
           if (label) {
             label.textContent = 'コピーしました ✓';
@@ -106,6 +139,17 @@ const ogImageUrl = SITE.siteUrl + ogImage;
           ta.select();
           document.execCommand('copy');
           document.body.removeChild(ta);
+          copied();
+        }
+      });
+      // 表は横スクロール可能なラッパーで包み、ページ全体の横スクロールを防ぐ
+      document.querySelectorAll('main table').forEach((t) => {
+        const parent = t.parentElement;
+        if (parent && !parent.classList.contains('table-scroll')) {
+          const wrap = document.createElement('div');
+          wrap.className = 'table-scroll';
+          parent.insertBefore(wrap, t);
+          wrap.appendChild(t);
         }
       });
     </script>

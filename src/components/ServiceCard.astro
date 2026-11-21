@@ -6,19 +6,30 @@ import { CATEGORY_NAMES, slugOf } from '../data/site';
 interface Props {
   article: CollectionEntry<'articles'>;
   showBody?: boolean;
+  detailLink?: boolean;
+  ctaPosition?: string;
 }
 
-const { article, showBody = false } = Astro.props;
+const { article, showBody = false, detailLink = true, ctaPosition = 'card' } = Astro.props;
 const { data } = article;
 const { Content } = await render(article);
+const slug = slugOf(article.id);
+const articleUrl = `/mea-ranking/articles/${slug}/`;
+const IMG_DIMS: Record<string, [number, number]> = {"/images/banner-freecash.jpg": [3200, 800], "/images/banner-muse.jpg": [3840, 640], "/images/banner-official-hapitas.png": [561, 129], "/images/banner-official-moppy.jpg": [234, 60], "/images/banner-official-warau.png": [234, 60], "/images/hero.jpg": [1179, 393]};
+const imgSize = data.image ? IMG_DIMS[data.image] : undefined;
 ---
 
-<article class="service-card" id={slugOf(article.id)}>
-  <span class="category">{CATEGORY_NAMES[data.category] ?? data.category}</span>
+<article class="service-card" id={slug}>
+  <div class="card-tags">
+    <span class="card-tag">{CATEGORY_NAMES[data.category] ?? data.category}</span>
+  </div>
   <h3>
-    <a href={`/mea-ranking/articles/${slugOf(article.id)}/`}>{data.service}</a>
+    <a href={articleUrl}>{data.service}</a>
   </h3>
-  <p class="benefit">{data.benefit}</p>
+  <div class="benefit-badge">
+    <span class="benefit-label">登録者特典</span>
+    <span class="benefit-value">{data.benefit}</span>
+  </div>
   <p class="desc">{data.description}</p>
   {data.points && (
     <ul class="points">
@@ -26,12 +37,12 @@ const { Content } = await render(article);
     </ul>
   )}
   {data.image && (
-    <img class="banner" src={'/mea-ranking' + data.image} alt={data.imageAlt ?? `${data.service}の紹介バナー`} loading="lazy" />
+    <img class="banner" src={'/mea-ranking' + data.image} alt={data.imageAlt ?? `${data.service}の紹介バナー`} loading="lazy" decoding="async" width={imgSize?.[0]} height={imgSize?.[1]} />
   )}
   {data.code ? (
     <div class="code-row">
       <code>{data.code}</code>
-      <button class="copy-btn" type="button" data-copy={data.code}>
+      <button class="copy-btn" type="button" data-copy={data.code} data-service={slug}>
         <span class="copy-label">コピー</span>
       </button>
     </div>
@@ -40,15 +51,18 @@ const { Content } = await render(article);
   )}
   {showBody && <Content />}
   {data.url ? (
-    <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener">
-      {data.service}に紹介登録する →
+    <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener" data-service={slug} data-position={ctaPosition}>
+      無料で登録する
     </a>
   ) : data.officialSite ? (
-    <a class="register-btn" href={data.officialSite} target="_blank" rel="noopener">
-      {data.service}公式サイトを見る →
+    <a class="register-btn" href={data.officialSite} target="_blank" rel="noopener" data-service={slug} data-position={ctaPosition}>
+      公式サイトを見る
     </a>
   ) : (
     <p class="conditions">※{data.service}は招待コードのみの紹介です。アプリ・サイト内でコードを入力してください。</p>
+  )}
+  {detailLink && (
+    <a class="detail-link" href={articleUrl}>詳細と条件を確認する</a>
   )}
   {data.prNote && <p class="pr-note">{data.prNote}</p>}
 </article>
