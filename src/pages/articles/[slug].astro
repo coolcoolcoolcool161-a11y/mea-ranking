@@ -29,7 +29,13 @@ if (headingLineIdxs.length >= 2) {
 const firstHtml = (await mdProcessor.render(bodyFirst)).code;
 const restHtml = bodyRest ? (await mdProcessor.render(bodyRest)).code : '';
 
-const BOARD_SLUGS = new Set(['freecash', 'warau', 'hapitas', 'moppy', 'tiktok', 'tiktok-lite', 'orikuji', 'pokekatsu', 'muse', 'sampo', 'butamaru', 'mirapoi', 'tokueru', 'dips']);
+const BOARD_SLUG_MAP: Record<string, string> = {
+  freecash: 'freecash', warau: 'warau', hapitas: 'hapitas', moppy: 'moppy',
+  tiktok: 'tiktok', 'tiktok-lite': 'tiktok-lite', orikuji: 'orikuji', pokekatsu: 'pokekatsu',
+  muse: 'muse', sampo: 'sampo', butamaru: 'butamaru', mirapoi: 'mirapoi',
+  tokueru: 'tokueru', dips: 'dips', mercari: 'mercari', paypay: 'paypay',
+  airwallet: 'airwallet', 'rakuten-mobile': 'rakuten-mobile', olive: 'smbc-olive',
+};
 const all = await getCollection('articles');
 const related = all.filter((a) => a.data.category === data.category && a.id !== article.id);
 const others = all.filter((a) => a.data.category !== data.category && a.id !== article.id).slice(0, 3);
@@ -104,8 +110,8 @@ const jsonLd = {
       ) : (
         <p class="conditions">※{data.service}は招待コードのみの紹介です。アプリ・サイト内でコードを入力してください。</p>
       )}
-      {BOARD_SLUGS.has(slugOf(article.id)) && (
-        <p><a href={`https://coolcoolcoolcool161-a11y.github.io/mea-keijiban/service/${slugOf(article.id)}/`} target="_blank" rel="noopener">みんなのコードも見る（掲示板）</a></p>
+      {BOARD_SLUG_MAP[slugOf(article.id)] && (
+        <p><a href={`https://coolcoolcoolcool161-a11y.github.io/mea-keijiban/service/${BOARD_SLUG_MAP[slugOf(article.id)]}/`} target="_blank" rel="noopener">みんなのコードも見る（掲示板）</a></p>
       )}
     </section>
 
