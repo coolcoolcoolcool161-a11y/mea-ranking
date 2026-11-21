@@ -52,6 +52,7 @@ const imgSize = data.image ? IMG_DIMS[data.image] : undefined;
     <p class="conditions">紹介コードはありません。紹介リンクから登録してください。</p>
   )}
   {showBody && <Content />}
+  {data.conditions && <p class="conditions">{data.conditions}</p>}
   {data.url ? (
     <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener" data-service={slug} data-position={ctaPosition}>
       無料で登録する

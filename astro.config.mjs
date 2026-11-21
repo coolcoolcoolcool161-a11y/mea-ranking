@@ -1,11 +1,31 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { readdirSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
-// 公開URL：GitHub Pages（プロジェクトサイト）。
-// Cloudflare Pages等へ移行する場合は site / base を移行先に合わせて書き換えること。
+// 記事 frontmatter の dateModified を slug 別に読み取る（F-22: sitemap lastmod の供給源）。
+// 確かな日付があるのは記事ページのみ。その他のページには lastmod を付けない。
+const articlesDir = fileURLToPath(new URL('./src/content/articles/', import.meta.url));
+const lastmodBySlug = {};
+for (const name of readdirSync(articlesDir)) {
+  if (!name.endsWith('.md')) continue;
+  const text = readFileSync(path.join(articlesDir, name), 'utf8');
+  const m = text.match(/dateModified:\s*["']?(\d{4}-\d{2}-\d{2})/);
+  if (m) lastmodBySlug[name.replace(/\.md$/, '')] = m[1];
+}
+
 export default defineConfig({
   site: 'https://coolcoolcoolcool161-a11y.github.io',
   base: '/mea-ranking',
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      serialize(item) {
+        const m = item.url.match(/\/articles\/([^/]+)\/$/);
+        if (m && lastmodBySlug[m[1]]) item.lastmod = lastmodBySlug[m[1]];
+        return item;
+      },
+    }),
+  ],
 });

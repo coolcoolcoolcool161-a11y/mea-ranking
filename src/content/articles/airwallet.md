@@ -9,6 +9,7 @@ url: "https://point.recruit.co.jp/recruitid/doc/campaign/aw/airwallet202610_invi
 image: "/images/banner-airwallet.jpg"
 dateModified: "2026-11-19"
 rank: 12
+conditions: "紹介リンクから新規登録してください。新規登録でPonta 300ptがもらえます。"
 ---
 
 ## ランキングでの順位：12位

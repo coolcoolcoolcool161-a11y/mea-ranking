@@ -9,6 +9,7 @@ url: "https://www.tiktok.com/d/2/ZS9f73DUaTHEE-3fczb/"
 dateModified: "2026-11-19"
 rank: 3
 image: "https://coolcoolcoolcool161-a11y.github.io/mea-poikatsu-blog/images/banner-tiktok.jpg"
+conditions: "新規登録と条件達成が対象です。登録時はWi-FiをOFFにしてモバイル通信で、招待URLを直接開いてください。"
 ---
 
 ## ランキングでの順位：3位

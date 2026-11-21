@@ -9,6 +9,7 @@ url: "https://s.paypay.ne.jp/5HWsZW"
 image: "/images/banner-paypay.jpg"
 dateModified: "2026-11-19"
 rank: 11
+conditions: "コード入力と1,000円以上の決済は、どちらも新規登録から60日以内に行ってください。達成で300ptがもらえます。"
 ---
 
 ## ランキングでの順位：11位

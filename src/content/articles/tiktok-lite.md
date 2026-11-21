@@ -9,6 +9,7 @@ url: "https://lite.tiktok.com/t/ZS9f73unLbRXS-wsJMe/"
 image: "/images/banner-tiktok-lite.jpg"
 dateModified: "2026-11-19"
 rank: 8
+conditions: "新規登録と条件達成が対象です。登録時はWi-FiをOFFにしてモバイル通信で、招待URLを直接開いてください。"
 ---
 
 ## ランキングでの順位：8位

@@ -9,6 +9,7 @@ url: "https://www.smbc.co.jp/kojin/redirect/referral04/index.html"
 image: "/images/banner-olive.jpg"
 dateModified: "2026-11-19"
 rank: 6
+conditions: "エントリーとOlive契約を行い、契約日の翌月末時点で残高1万円以上が条件です。達成でVポイント1,000円相当がもらえます。"
 ---
 
 ## ランキングでの順位：6位

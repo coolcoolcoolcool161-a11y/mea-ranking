@@ -9,6 +9,7 @@ url: "https://bit.ly/4fEUA8S"
 image: "/images/banner-orikuji.jpg"
 dateModified: "2026-11-19"
 rank: 13
+conditions: "招待コードは新規登録後24時間以内に入力してください。入力で500ptがもらえます。"
 ---
 
 ## ランキングでの順位：13位

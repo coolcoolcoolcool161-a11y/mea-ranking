@@ -8,6 +8,7 @@ code: "HKRDNM"
 url: "https://link.jp.mercari.com/70tO/lpthbfqe"
 dateModified: "2026-11-19"
 rank: 10
+conditions: "アプリをインストールし、登録時に招待コードを入力してください。入力で500円分がもらえます。"
 ---
 
 ## ランキングでの順位：10位

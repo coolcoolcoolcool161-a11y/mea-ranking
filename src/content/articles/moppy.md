@@ -10,6 +10,7 @@ image: "/images/banner-official-moppy.jpg"
 imageAlt: "モッピー公式バナー"
 dateModified: "2026-11-19"
 rank: 2
+conditions: "新規登録と広告利用5,000P以上の達成で、最大7,000Pがもらえます。"
 ---
 
 ## ランキングでの順位：2位

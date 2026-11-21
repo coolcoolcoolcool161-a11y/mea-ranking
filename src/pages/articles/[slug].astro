@@ -98,7 +98,11 @@ const jsonLd = {
       ) : (
         <p class="conditions">紹介コードはありません。紹介リンクから登録してください。</p>
       )}
-      <p class="conditions">条件・注意事項は上の記事本文で確認してから登録してください。</p>
+      {data.conditions ? (
+        <p class="conditions">{data.conditions}</p>
+      ) : (
+        <p class="conditions">条件・注意事項は上の記事本文で確認してから登録してください。</p>
+      )}
       {data.url ? (
         <a class="register-btn" href={data.url} target="_blank" rel="sponsored noopener" data-service={slugOf(article.id)} data-position="article_bottom">
           無料で登録する

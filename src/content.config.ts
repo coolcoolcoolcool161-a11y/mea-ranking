@@ -8,6 +8,7 @@ const articles = defineCollection({
     service: z.string(),
     category: z.string(),
     benefit: z.string(),
+    conditions: z.string().optional(),
     code: z.string().optional(),
     url: z.string().url().optional(),
     officialSite: z.string().url().optional(),
