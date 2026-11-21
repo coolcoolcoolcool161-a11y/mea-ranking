@@ -1,15 +1,33 @@
 ---
-// 忍者AdMaxの同期タグ（SP用 ID 1239768・PC用 ID 1239769）。
-// 旧サイトと同じ2タグを3箇所で使い回す構成で移行する。
-// 同一タグの複数箇所流用は公式未確認。表示されない場合は箇所ごとに枠を作り直す。
+// 忍者AdMaxの同期タグ（位置別スロットテスト 2026-11-21）。
+// position プロパティで位置ごとに枠を出し分ける（デフォルト top）。
+// 上: SP ID 1239768 / PC ID 1239769（既存枠）
+// 中: SP ID 1240153（mea-middle-sp） / PC ID 1240151（mea-middle-pc）
+// 下: SP ID 1240154（mea-bottom-sp） / PC ID 1240152（mea-bottom-pc）
+const { position = 'top' } = Astro.props;
+const tags = {
+  top: {
+    sp: 'https://adm.shinobi.jp/s/2bf66d3fa0f7b313d221ccbe4ad2aaad',
+    pc: 'https://adm.shinobi.jp/s/36245df0112ed5538fc93ea44079ca30',
+  },
+  middle: {
+    sp: 'https://adm.shinobi.jp/s/f63c83e07a0650fb68334a0b14bab322',
+    pc: 'https://adm.shinobi.jp/s/ba5c7a7702fcf065cc6027cd8e6b78d4',
+  },
+  bottom: {
+    sp: 'https://adm.shinobi.jp/s/8acf2a21544e83d361a725925f6286e1',
+    pc: 'https://adm.shinobi.jp/s/f995bd3106a4a6240a1f4a8621dcaa4e',
+  },
+};
+const tag = tags[position] ?? tags.top;
 ---
 
 <div class="ad-slot">
   <div class="ad-label">広告</div>
   <div class="ad-sp">
-    <script is:inline src="https://adm.shinobi.jp/s/2bf66d3fa0f7b313d221ccbe4ad2aaad"></script>
+    <script is:inline src={tag.sp}></script>
   </div>
   <div class="ad-pc">
-    <script is:inline src="https://adm.shinobi.jp/s/36245df0112ed5538fc93ea44079ca30"></script>
+    <script is:inline src={tag.pc}></script>
   </div>
 </div>
