@@ -6,6 +6,7 @@ category: payment-bank
 benefit: "300pt"
 code: "02-49XLFP8"
 url: "https://s.paypay.ne.jp/5HWsZW"
+image: "/images/banner-paypay.jpg"
 dateModified: "2026-11-19"
 rank: 11
 ---

@@ -6,6 +6,7 @@ category: new-apps
 benefit: "4,000pt"
 code: "GTKZ6E"
 officialSite: "https://www.sampo.cash/ja"
+image: "/images/banner-sampo.jpg"
 dateModified: "2026-11-19"
 points:
 - "新規登録で 4,000pt"

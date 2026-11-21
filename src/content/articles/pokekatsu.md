@@ -5,6 +5,7 @@ service: "ポケカツ"
 category: game-entertainment
 benefit: "合計1,300円分"
 code: "2BGZ325P"
+image: "/images/banner-pokekatsu.jpg"
 dateModified: "2026-11-19"
 rank: 9
 ---

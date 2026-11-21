@@ -6,6 +6,7 @@ category: sns-video
 benefit: "1,400円分"
 code: "890270647"
 url: "https://lite.tiktok.com/t/ZS9f73unLbRXS-wsJMe/"
+image: "/images/banner-tiktok-lite.jpg"
 dateModified: "2026-11-19"
 rank: 8
 ---

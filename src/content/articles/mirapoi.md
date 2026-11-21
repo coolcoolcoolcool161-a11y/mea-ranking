@@ -6,6 +6,7 @@ category: new-apps
 benefit: "招待特典あり"
 code: "P3CQCWG3"
 url: "https://mirapoi.go.link?adj_t=2582zjy0&adj_deep_link=mirapoi%3A%2F%2Fref%3Fcode%3DP3CQCWG3&adj_fallback=https%3A%2F%2Fmirapoi.jp%2F%3Fref%3DP3CQCWG3&adj_redirect_macos=https%3A%2F%2Fmirapoi.jp%2F%3Fref%3DP3CQCWG3"
+image: "/images/banner-mirapoi.jpg"
 dateModified: "2026-11-19"
 points:
 - "招待特典あり（金額はアプリ内でご確認ください）"

@@ -6,6 +6,7 @@ category: new-apps
 benefit: "5,000ポイント"
 code: "9459GJ"
 url: "https://tokueru.jp/invitations/9459GJ"
+image: "/images/banner-tokueru.jpg"
 dateModified: "2026-11-19"
 points:
 - "あなたに5,000ポイント"
