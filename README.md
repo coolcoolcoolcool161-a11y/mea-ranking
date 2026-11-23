@@ -20,8 +20,8 @@
 - コード・紹介URL・特典額・条件は `src/content/articles/*.md` のfrontmatterと本文に記載。変更するときは `~/workspace/*-referral-post.txt` と台帳 `~/workspace/site-migration-inventory.md` §4.1 で照合すること。
 - **注意：ワラウの紹介URLは `https://www.warau.jp/friend/reg/bEs5`、コードは `bEs7`。公式バナーHTMLの `/boav` は別物で使わないこと。**
 - ワラウのレートは公式確認で **1pt＝1円**（ワラウコインは別物で10コイン＝1pt）。
-- Freecashの招待された側は約1,430円相当（「約1,500円分」は誤りで使わないこと）。
-- ランキング表の順位・金額は旧サイト通り。金額順とずれている箇所（7位 Freecash 約1,430円相当 → 8位 TikTok Lite 1,400円分）も旧サイトの順序を維持している。
+- Freecashは招待コード入力後、初回DLで1,430円分ゲット（旧表記「招待された側は初回DLで1,430円分」は誤りで使わないこと）。
+- ランキング表の順位・金額は旧サイト通り。金額順とずれている箇所（7位 Freecash 初回DLで1,430円分 → 8位 TikTok Lite 1,400円分）も旧サイトの順序を維持している。
 
 ## 広告
 

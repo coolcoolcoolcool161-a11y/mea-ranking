@@ -5,7 +5,7 @@ export const SITE = {
   operator: 'メア',
   siteUrl: 'https://mea-poikatsu.github.io/mea-ranking',
   description:
-    '紹介コード・招待コードの特典額ランキング全19サービス比較。楽天モバイル13,000pt・モッピー7,000P・TikTok 6,000円分・ワラウ最大2,500pt・ハピタス最大2,300P・Freecash約1,430円相当など、特典額の大きい順に並べました。',
+    '紹介コード・招待コードの特典額ランキング全19サービス比較。楽天モバイル13,000pt・モッピー7,000P・TikTok 6,000円分・ワラウ最大2,500pt・ハピタス最大2,300P・Freecash初回DLで1,430円分など、特典額の大きい順に並べました。',
   dateModified: '2026-11-21',
   gaMeasurementId: 'G-8BB8V3DRW8',
   xAccount: 'https://x.com/pppppuririn',
@@ -33,7 +33,7 @@ export const CATEGORY_NAMES: Record<string, string> = Object.fromEntries(
 );
 
 // 特典額ランキング（旧サイトの表と同じ順序・金額で移行）
-// 順位・金額順とずれている箇所も旧サイト通り（例：7位 Freecash 約1,430円相当 → 8位 TikTok Lite 1,400円分）。
+// 順位・金額順とずれている箇所も旧サイト通り（例：7位 Freecash 初回DLで1,430円分 → 8位 TikTok Lite 1,400円分）。
 export const RANKING = [
   { rank: 1, slug: 'rakuten-mobile', name: '楽天モバイル', benefit: '最大13,000pt', category: 'payment-bank' },
   { rank: 2, slug: 'moppy', name: 'モッピー', benefit: '最大7,000P', category: 'point-sites' },
@@ -41,7 +41,7 @@ export const RANKING = [
   { rank: 4, slug: 'warau', name: 'ワラウ', benefit: '最大2,500pt', category: 'point-sites' },
   { rank: 5, slug: 'hapitas', name: 'ハピタス', benefit: '最大2,300円分', category: 'point-sites' },
   { rank: 6, slug: 'olive', name: 'SMBC Olive', benefit: '1,000円相当', category: 'payment-bank' },
-  { rank: 7, slug: 'freecash', name: 'Freecash', benefit: '約1,430円相当', category: 'game-entertainment', featured: true },
+  { rank: 7, slug: 'freecash', name: 'Freecash', benefit: '初回DLで1,430円分', category: 'game-entertainment', featured: true },
   { rank: 8, slug: 'tiktok-lite', name: 'TikTok Lite', benefit: '1,400円分', category: 'sns-video' },
   { rank: 9, slug: 'pokekatsu', name: 'ポケカツ', benefit: '1,300円分', category: 'game-entertainment' },
   { rank: 10, slug: 'mercari', name: 'メルカリ', benefit: '500円分', category: 'shopping' },
@@ -90,7 +90,7 @@ export const FAQS = [
   },
   {
     q: 'Freecashは7位なのに、なぜイチオシなのですか？',
-    a: '特典額は約1,430円相当と中位なんだけど、対象のゲームをプレイするだけで報酬がもらえるから、条件達成のハードルが低くてスマホだけで完結するの✨ 金額の大きさだけじゃなくて「もらいやすさ」も含めて、メアがおすすめしているよ💖',
+    a: '特典は初回DLで1,430円分と中位なんだけど、毎日のルーレットやログインでも報酬がもらえるから、条件達成のハードルが低くてスマホだけで完結するの✨ 金額の大きさだけじゃなくて「もらいやすさ」も含めて、メアがおすすめしているよ💖',
   },
   {
     q: '複数のサービスに登録しても大丈夫ですか？',
