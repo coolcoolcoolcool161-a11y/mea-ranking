@@ -43,7 +43,7 @@ export const RANKING = [
   { rank: 6, slug: 'olive', name: 'SMBC Olive', benefit: '1,000円相当', category: 'payment-bank' },
   { rank: 7, slug: 'freecash', name: 'Freecash', benefit: '初回DLで1,430円分', category: 'game-entertainment', featured: true },
   { rank: 8, slug: 'tiktok-lite', name: 'TikTok Lite', benefit: '1,400円分', category: 'sns-video' },
-  { rank: 9, slug: 'pokekatsu', name: 'ポケカツ', benefit: '1,300円分', category: 'game-entertainment' },
+  { rank: 9, slug: 'pokekatsu', name: 'ポケカツ', benefit: '初回チャージ90%OFF', category: 'game-entertainment' },
   { rank: 10, slug: 'mercari', name: 'メルカリ', benefit: '500円分', category: 'shopping' },
   { rank: 11, slug: 'paypay', name: 'PayPay', benefit: '300pt', category: 'payment-bank' },
   { rank: 12, slug: 'airwallet', name: 'エアウォレット', benefit: 'Ponta 300pt', category: 'payment-bank' },
