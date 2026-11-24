@@ -1,9 +1,10 @@
 // S03 ポイランク：編集スコアの算出モジュール。
-// 事実の正は ~/workspace/site-migration/work/services-data.json（このファイルはそこから読み込む）。
+// 事実の正は ~/workspace/site-migration/work/services-data.json。CI（GitHub Actions）はリポジトリ外を
+// 読めないため、その同期コピー src/data/services-data.json から読み込む（事実を更新したら必ず同期すること）。
 // スコアは「編集スコア」：公式に確認できる事実（特典額・条件の項目数・キャンペーン期限）だけから
 // 下記の決定式で算出する。実測・検証の結果ではない。ページ上の「スコアの算出方法」セクションの
 // 説明文と、このファイルの式は一致させること（片方だけ変えない）。
-import data from '../../../work/services-data.json';
+import data from './services-data.json';
 
 export interface ServiceFacts {
   slug: string;
