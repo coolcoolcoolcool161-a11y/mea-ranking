@@ -1,198 +1,267 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
 import AdSlot from '../components/AdSlot.astro';
-import { SITE, CATEGORIES, CATEGORY_NAMES, RANKING, FAQS, SISTER_BLOGS, slugOf } from '../data/site';
+import { SITE, FAQS, SISTER_BLOGS} from '../data/site';
+import {
+SCORED_SERVICES,
+sortServices,
+AXIS_LABELS,
+LAST_VERIFIED,
+type ScoredService,
+type SortAxis,
+} from '../data/scores';
 
-const articles = await getCollection('articles');
-const bySlug = new Map(articles.map((a) => [slugOf(a.id), a]));
-const byCategory = (slug: string) => articles.filter((a) => a.data.category === slug);
-const freecash = bySlug.get('freecash')!;
-const muse = bySlug.get('muse')!;
-const newApps = byCategory('new-apps');
+const AXES: SortAxis[] = ['total', 'benefit', 'ease', 'deadline'];
+const defaultList = sortServices(SCORED_SERVICES, 'total');
+const first = defaultList[0];
+const best3 = defaultList.slice(0, 3);
 
-// ランキング表の各行に表示する条件の要約（旧サイトの表の文言をそのまま移行）
-const ROW_CONDITIONS: Record<string, string> = {
-  'rakuten-mobile': '初めての申込限定。MNP乗り換えで13,000pt、新規でも12,000pt',
-  moppy: '新規登録＋広告利用5,000P以上達成で最大7,000Pのチャンス',
-  tiktok: '新規登録で6,000円分の報酬獲得チャンス。登録時はWi-Fi OFFで招待URLを直接開くのがコツ',
-  warau: '紹介経由で初回ボーナスが300pt→500ptにアップ。最大2,500ptの大チャンス',
-  hapitas: '登録＋条件達成で最大2,300P（11月限定キャンペーン）',
-  olive: 'エントリー＋Olive契約＋翌月末残高10,000円以上でVポイント1,000円相当',
-  freecash: '紹介リンクから登録して対象ゲームをプレイするだけで報酬GET',
-  'tiktok-lite': '新規登録で1,400円分の報酬獲得チャンス。登録時はWi-Fi OFFで招待URLを直接開くのがコツ',
-  pokekatsu: '登録は無料、初回チャージは90%OFF。7日間ガチャも実施中',
-  mercari: 'アプリをインストールして登録時に招待コードを入力すると500円分お得にお買い物',
-  paypay: '登録時にコード入力＋対象の支払いで1,000円以上使うと、300ptもらえます',
-  airwallet: '招待コード入力＋新規登録でCOIN+残高300円分。銀行口座間の送金が手数料無料',
-  orikuji: '招待コード入力で、500ptプレゼント。0円でも楽しめる',
-};
+const verifiedLabel = LAST_VERIFIED.replace(
+/(\d{4})-(\d{2})-(\d{2})/,
+'$1年$2月$3日',
+);
 
-// ランキング表の行内に表示する自作細型バナー（2026-11-24 公式バナーから作り直し）
-const ROW_BANNERS: Record<string, { src: string; alt: string }> = {
-  moppy: { src: '/mea-ranking/images/banner-moppy.jpg', alt: 'モッピーの紹介バナー' },
-  warau: { src: '/mea-ranking/images/banner-warau.jpg', alt: 'ワラウの紹介バナー' },
-  hapitas: { src: '/mea-ranking/images/banner-hapitas.jpg', alt: 'ハピタスの紹介バナー' },
-};
-
-const itemList = [...RANKING].map((r, i) => ({
-  '@type': 'ListItem',
-  position: i + 1,
-  name: `${r.name} ${r.benefit}`,
+// クライアント側の並び替えで使うデータ（表示に必要な分だけ）
+const clientData = SCORED_SERVICES.map((s) => ({
+slug: s.slug,
+name: s.name,
+benefit: s.benefit,
+code: s.code,
+friendCode: s.friendCode?? null,
+url: s.url,
+scores: s.scores,
+priority: s.priority,
+index: s.index,
 }));
-// ランキング表に載っていない6サービスも一覧に追加（19件）
-const rankedSlugs = new Set(RANKING.map((r) => r.slug));
-const rest = articles
-  .filter((a) => !rankedSlugs.has(slugOf(a.id)))
-  .map((a) => `${a.data.service} ${a.data.code ? `紹介コード ${a.data.code}` : ''} ${a.data.benefit}`);
-rest.forEach((name, i) => {
-  itemList.push({ '@type': 'ListItem', position: RANKING.length + i + 1, name });
-});
+
+const itemList = defaultList.map((s, i) => ({
+'@type': 'ListItem',
+position: i + 1,
+name: `${s.name} ${s.benefit}`,
+}));
 
 const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebPage',
-      name: '紹介コード・招待コード特典額ランキング全19サービス比較',
-      description: SITE.description,
-      inLanguage: 'ja',
-      dateModified: SITE.dateModified,
-    },
-    { '@type': 'ItemList', name: '紹介コード特典額ランキング', numberOfItems: 19, itemListElement: itemList },
-    {
-      '@type': 'FAQPage',
-      mainEntity: FAQS.map((f) => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
-    {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'ポイランク トップ', item: SITE.siteUrl + '/' },
-        { '@type': 'ListItem', position: 2, name: '特典額ランキング', item: SITE.siteUrl + '/' },
-      ],
-    },
-  ],
+'@context': 'https://schema.org',
+'@graph': [
+{
+'@type': 'WebPage',
+name: '紹介コード・招待コードランキング全19サービス比較｜編集スコアで並び替え',
+description: SITE.description,
+inLanguage: 'ja',
+dateModified: SITE.dateModified,
+},
+{ '@type': 'ItemList', name: '紹介コードランキング（総合スコア順）', numberOfItems: 19, itemListElement: itemList},
+{
+'@type': 'FAQPage',
+mainEntity: FAQS.map((f) => ({
+'@type': 'Question',
+name: f.q,
+acceptedAnswer: { '@type': 'Answer', text: f.a},
+})),
+},
+{
+'@type': 'BreadcrumbList',
+itemListElement: [
+{ '@type': 'ListItem', position: 1, name: 'ポイランク トップ', item: SITE.siteUrl + '/'},
+{ '@type': 'ListItem', position: 2, name: 'ランキング', item: SITE.siteUrl + '/'},
+],
+},
+],
 };
 
-const title = '紹介コード・招待コード特典額ランキング全19サービス比較｜楽天モバイル13,000pt・モッピー7,000P・Freecash初回DLで1,430円分';
-const top3 = [...RANKING].slice(0, 3);
-const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainment', 'shopping'] as const;
+const title = '紹介コード・招待コードランキング全19サービス比較｜編集スコアで並び替えできるポイランク';
 ---
 
 <BaseLayout title={title} description={SITE.description} canonicalPath="/" jsonLd={jsonLd}>
-  <div class="wrap">
-    <div class="hero">
-      <img src="/mea-ranking/images/hero.jpg" alt="メアのポイ活×招待コード×紹介系バナー｜お得をもっと身近に、一緒におトクをGETしよう" width="1179" height="393"  fetchpriority="high"/>
-    </div>
+<div class="wrap">
+<div class="hero">
+<img src="/mea-ranking/images/hero.jpg" alt="メアのポイ活×招待コード×紹介系バナー｜お得をもっと身近に、一緒におトクをGETしよう" width="1179" height="393" fetchpriority="high" />
+</div>
 <p class="pace-banner">🌱1ヶ月 約5万円ペースで貯まるよ♡</p>
 <style>
-  .pace-banner { margin: 14px 0 6px; padding: 12px 16px; border-radius: 999px; background: linear-gradient(90deg, #d81b60, #ad1457); color: #fff; font-weight: 800; font-size: clamp(1.05rem, 3.6vw, 1.45rem); text-align: center; letter-spacing: 0.02em; box-shadow: 0 4px 14px rgba(216, 27, 96, 0.35); }
+.pace-banner { margin: 14px 0 6px; padding: 12px 16px; border-radius: 999px; background: linear-gradient(90deg, #d81b60, #ad1457); color: #fff; font-weight: 800; font-size: clamp(1.05rem, 3.6vw, 1.45rem); text-align: center; letter-spacing: 0.02em; box-shadow: 0 4px 14px rgba(216, 27, 96, 0.35);}
 </style>
 <div class="pr-box">
-      このページは広告（PR）を含みます。掲載している紹介リンク・紹介コードを使って各サービスに登録し、所定の条件を満たすと、メア（紹介者）に、各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、あなたの特典が減ったり、利用料金が上乗せされたりすることはないので安心してね。仕組みと対象範囲は<a href="/mea-ranking/ad-disclosure/">「広告・紹介報酬に関する表記」</a>にまとめています。
-    </div>
+このページは広告（PR）を含みます。掲載している紹介リンク・紹介コードを使って各サービスに登録し、所定の条件を満たすと、メア（紹介者）に、各サービスの運営会社から紹介報酬が支払われる場合があります。紹介報酬が発生しても、あなたの特典が減ったり、利用料金が上乗せされたりすることはないので安心してね。仕組みと対象範囲は<a href="/mea-ranking/ad-disclosure/">「広告・紹介報酬に関する表記」</a>にまとめています。
+</div>
 
-    <p class="article-meta">最終更新：2026年11月19日／特典額・条件は各サービスの紹介キャンペーン内容をもとに掲載しているよ♪ キャンペーンは予告なく変更・終了する場合があるから、登録前に公式ページもチェックしてね💡</p>
+<h1>紹介コード・招待コード ランキング</h1>
+<p class="lead">
+全19サービスの紹介特典を、編集部が公式情報から算出した<strong>編集スコア</strong>で比べられるランキングだよ♪ 「メインにするスコア」を切り替えると、特典額・条件の手軽さ・期限の余裕のどれを重視するかで順位がその場で変わるの✨ スコアの算出式はページの下のほうに全部公開しているから、納得して選んでね💡
+</p>
+<p class="article-meta">情報の最終確認：{verifiedLabel}（特典額・条件・期限は各サービスの公式情報を確認して掲載しています）／キャンペーンは予告なく変更・終了する場合があるから、登録前に公式ページもチェックしてね。</p>
 
-    <h1>メアの紹介コード・招待コード 特典額ランキング ✨</h1>
-    <p class="lead">
-      こんにちは、メアだよ💖 私が紹介登録でもらえる特典の金額が高い順に、全19サービスをまとめたよ♪ 特典額ランキングの一覧表（13サービス）に加えて、新着ポイ活アプリ5件（サンポ・ぶたまる・ミラポイ・トクエル・dipsファーム）とMuseも紹介しているの✨ 順位・特典額・獲得条件・紹介コード・登録リンクをぜんぶ載せたから、「どれから登録すると一番お得かな？」がひと目で分かるよ🎀
-    </p>
+<section class="hero-first" aria-label="結論：いまの1位">
+<p class="hero-first-kicker">👑 結論：<span id="hero-axis-label">総合スコア</span>の1位はこれ！</p>
+<p class="hero-first-name" id="hero-name">{first.name}</p>
+<p class="hero-first-benefit" id="hero-benefit">{first.benefit}</p>
+<div class="hero-first-scores" id="hero-scores">
+<span>総合 <b>{first.scores.total}</b></span>
+<span>特典額 <b>{first.scores.benefit}</b></span>
+<span>手軽さ <b>{first.scores.ease}</b></span>
+<span>期限 <b>{first.scores.deadline}</b></span>
+</div>
+<div class="hero-first-code" id="hero-code">
+{first.code && (
+<span class="code-chip">
+招待コード：<code>{first.code}</code>
+<button class="copy-btn" type="button" data-copy={first.code} data-service={first.slug}><span class="copy-label">コピー</span></button>
+</span>
+)}
+{first.friendCode && (
+<span class="code-chip">
+友達招待コード：<code>{first.friendCode}</code>
+<button class="copy-btn" type="button" data-copy={first.friendCode} data-service={first.slug}><span class="copy-label">コピー</span></button>
+</span>
+)}
+</div>
+<div class="hero-first-cta" id="hero-cta">
+{first.url? (
+<a class="register-btn hero-cta-btn" href={first.url} target="_blank" rel="sponsored noopener" data-ref-service={first.slug} data-ref-placement="hero" data-service={first.slug} data-position="hero">{first.name}に登録する</a>
+): (
+<a class="register-btn hero-cta-btn" href={`/mea-ranking/articles/${first.slug}/`}>{first.name}の詳細を見る</a>
+)}
+</div>
+<p class="hero-first-note">※特典額だけで見ると最大は楽天モバイルの最大13,000ptだよ。重視するポイントで順位がどう変わるか、下の並び替えで試してみてね。</p>
+</section>
 
-    <div class="stats">
-      <div class="stat"><b>19</b>掲載サービス</div>
-      <div class="stat"><b>13,000pt</b>最高特典額（楽天モバイル）</div>
-      <div class="stat"><b>初回DLで1,430円分</b>イチオシ Freecash の特典</div>
-    </div>
+<section class="sort-section" aria-label="並び替え">
+<h2 id="sort">並び替え 🔀 メインにするスコアを選んでね</h2>
+<div class="sort-control" role="group" aria-label="メインにするスコア">
+{AXES.map((axis) => (
+<button
+type="button"
+class="sort-chip"
+data-axis={axis}
+aria-pressed={axis === 'total'? 'true': 'false'}
+>
+{AXIS_LABELS[axis]}
+</button>
+))}
+</div>
+<p class="sort-conclusion" id="sort-conclusion">
+「総合スコア」で並べると、1位は{first.name}（{first.benefit}）だよ。
+</p>
+</section>
 
-    <AdSlot position="top" />
+<h2 id="best3">ベスト3 🏆 BEST 3</h2>
+<p>選んだスコアでの上位3サービスだよ。並び替えを変えると、ここも連動して入れ替わるの✨</p>
+<div class="best3-grid" id="best3">
+{best3.map((s, i) => (
+<article class={`best-card${i === 0? ' is-first': ''}`}>
+<p class="best-rank">{i === 0? '👑 ': ''}{i + 1}位</p>
+<h3 class="best-name">{s.name}</h3>
+<p class="best-benefit">{s.benefit}</p>
+<div class="score-lines">
+<div class="score-line"><span>総合</span><span class="score-bar"><i style={`width:${s.scores.total}%`}></i></span><b>{s.scores.total}</b></div>
+<div class="score-line"><span>特典額</span><span class="score-bar"><i style={`width:${s.scores.benefit}%`}></i></span><b>{s.scores.benefit}</b></div>
+<div class="score-line"><span>手軽さ</span><span class="score-bar"><i style={`width:${s.scores.ease}%`}></i></span><b>{s.scores.ease}</b></div>
+<div class="score-line"><span>期限</span><span class="score-bar"><i style={`width:${s.scores.deadline}%`}></i></span><b>{s.scores.deadline}</b></div>
+</div>
+{s.code && (
+<p class="best-code">
+招待コード：<code>{s.code}</code>
+<button class="copy-btn" type="button" data-copy={s.code} data-service={s.slug}><span class="copy-label">コピー</span></button>
+{s.friendCode && (
+<>
+<br />友達招待コード：<code>{s.friendCode}</code>
+<button class="copy-btn" type="button" data-copy={s.friendCode} data-service={s.slug}><span class="copy-label">コピー</span></button>
+</>
+)}
+</p>
+)}
+{s.url? (
+<a class="register-btn" href={s.url} target="_blank" rel="sponsored noopener" data-ref-service={s.slug} data-ref-placement="best3" data-service={s.slug} data-position="best3">登録する</a>
+): (
+<a class="register-btn" href={`/mea-ranking/articles/${s.slug}/`}>詳細を見る</a>
+)}
+<p class="best-detail"><a href={`/mea-ranking/articles/${s.slug}/`}>{s.name}の条件・詳細を見る →</a></p>
+</article>
+))}
+</div>
 
-    <h2 id="featured">💚 メアのイチオシ特集</h2>
-    <ServiceCard article={freecash} showBody={true} />
+<AdSlot position="top" />
 
-    <h2 id="muse">✨ 新着サービス</h2>
-    <ServiceCard article={muse} showBody={true} />
-
-    <h2 id="top3">特典額トップ3 🏆 TOP 3</h2>
-    <p>まずはこの3つから始めてみてね💖 金額の大きさで選ぶなら、ここが本命だよ✨</p>
-    <div class="card-grid">
-      {top3.map((r) => {
-        const a = bySlug.get(r.slug)!;
-        return <ServiceCard article={a} />;
-      })}
-    </div>
-
-    <h2 id="ranking">全19サービス 特典額ランキング 💖 RANKING TABLE</h2>
-    <p>特典の最大額が高い順に並べたよ（ランキング表は13サービス）♪ 各行の「条件・原文を見る」で、獲得条件と紹介文の原文を確認できるの。コードはボタンひとつでコピーできるから便利だよ✨ 新着ポイ活アプリ5件は、ランキング表のあとの「新着アプリ」コーナーに載せているね🎀</p>
-    <table class="rank-table">
+    <h2 id="ranking">全19サービス ランキング表 💖 RANKING TABLE</h2>
+    <p>全19サービスの一覧だよ。上の「メインにするスコア」を切り替えると、この表の順位も連動して変わるの♪ スコアは全部「編集スコア」（算出方法は<a href="#method">こちら</a>）。条件は各行の「条件を見る」で確認してね。</p>
+    <table class="rank-table score-table">
       <thead>
-        <tr><th>順位</th><th>サービス／獲得条件</th><th>特典額</th><th>紹介コード</th><th>登録</th></tr>
+        <tr><th>順位</th><th>サービス</th><th>特典</th><th>条件</th><th>期限</th><th>スコア（総合／特典額／手軽さ／期限）</th><th>紹介コード</th><th>登録</th></tr>
       </thead>
-      <tbody>
-        {RANKING.map((r) => {
-          const a = bySlug.get(r.slug)!;
-          const banner = ROW_BANNERS[r.slug];
-          return (
-            <tr>
-              <td><span class="rank-badge">{r.rank}位</span></td>
-              <td>
-                <strong>{r.name}</strong> <span class="category">{CATEGORY_NAMES[r.category] ?? r.category}</span>
-                {banner && <div class="row-banner"><img src={banner.src} alt={banner.alt} loading="lazy" /></div>}
-                <div>{ROW_CONDITIONS[r.slug]}</div>
-                <details>
-                  <summary>条件・原文を見る ＋</summary>
-                  <p>獲得条件と紹介文の原文は、記事ページにまとめています。</p>
-                  <p><a href={`/mea-ranking/articles/${r.slug}/`}>{r.name}の記事で条件・原文の全文を見る →</a></p>
-                </details>
-              </td>
-              <td><strong>{r.benefit}</strong></td>
-              <td>{a.data.code ? <><code>{a.data.code}</code> <button class="copy-btn" type="button" data-copy={a.data.code}><span class="copy-label">コピー</span></button></> : 'リンク型（コード不要）'}</td>
-              <td>
-                {a.data.url ? (
-                  <a href={a.data.url} target="_blank" rel="sponsored noopener">登録する</a>
-                ) : (
-                  <a href={`/mea-ranking/articles/${r.slug}/`}>詳細を見る</a>
-                )}
-              </td>
-            </tr>
-          );
-        })}
+      <tbody id="rank-tbody">
+        {defaultList.map((s: ScoredService, i: number) => (
+          <tr data-slug={s.slug}>
+            <td><span class="rank-badge">{i + 1}位</span></td>
+            <td>
+              <strong>{s.name}</strong>
+              <div><a href={`/mea-ranking/articles/${s.slug}/`}>詳細ページ →</a></div>
+            </td>
+            <td><strong>{s.benefit}</strong></td>
+            <td>
+              <details>
+                <summary>条件を見る（{s.conditions.length}件）</summary>
+                <ul class="cond-list">
+                  {s.conditions.map((c) => <li>{c}</li>)}
+                </ul>
+              </details>
+            </td>
+            <td>{s.deadline ?? '期限の公表なし（恒常）'}</td>
+            <td class="scores-cell">
+              <span class="sc is-active" data-axis-cell="total">総合 <b>{s.scores.total}</b></span>
+              <span class="sc" data-axis-cell="benefit">特典 <b>{s.scores.benefit}</b></span>
+              <span class="sc" data-axis-cell="ease">手軽 <b>{s.scores.ease}</b></span>
+              <span class="sc" data-axis-cell="deadline">期限 <b>{s.scores.deadline}</b></span>
+            </td>
+            <td>
+              {s.code ? (
+                <>
+                  <code>{s.code}</code>
+                  <button class="copy-btn" type="button" data-copy={s.code} data-service={s.slug}><span class="copy-label">コピー</span></button>
+                  {s.friendCode && (
+                    <>
+                      <br /><code>{s.friendCode}</code>
+                      <button class="copy-btn" type="button" data-copy={s.friendCode} data-service={s.slug}><span class="copy-label">コピー</span></button>
+                    </>
+                  )}
+                </>
+              ) : (
+                'リンク型（コード不要）'
+              )}
+            </td>
+            <td>
+              {s.url ? (
+                <a href={s.url} target="_blank" rel="sponsored noopener" data-ref-service={s.slug} data-ref-placement="ranking" data-service={s.slug} data-position="ranking">登録する</a>
+              ) : (
+                <a href={`/mea-ranking/articles/${s.slug}/`}>詳細を見る</a>
+              )}
+            </td>
+          </tr>
+        ))}
       </tbody>
     </table>
-    <p class="conditions">※特典額は各サービスの紹介キャンペーンの最大値です。達成条件によって実際にもらえる額は変わります。PayPayとエアウォレットは同額（300pt）のため、掲載順はPayPay → エアウォレットとしています。※表内の登録リンク・紹介コードは紹介プログラムのリンク・コードです。経由して登録・条件達成があった場合、メアに紹介報酬が発生します（読者の方の特典額・負担は変わりません）。詳細は<a href="/mea-ranking/ad-disclosure/">広告・紹介報酬について</a>をご覧ください。</p>
+    <p class="conditions">※順位は編集スコアによるものです（実測・検証の結果ではありません）。特典額・条件・期限は{verifiedLabel}時点の公式情報です。キャンペーンは予告なく変更・終了する場合があります。※表内の登録リンク・紹介コードは紹介プログラムのリンク・コードです。経由して登録・条件達成があった場合、メアに紹介報酬が発生します（読者の方の特典額・負担は変わりません）。詳細は<a href="/mea-ranking/ad-disclosure/">広告・紹介報酬について</a>をご覧ください。</p>
 
     <AdSlot position="middle" />
 
-    <h2 id="new-apps">新着ポイ活アプリ 🌸 NEW APPS</h2>
-    <p>メアが新しく追加した5つの無料ポイ活アプリだよ💖 ランキングの順位には含めずに、新着としてまとめて紹介しているの♪ どのアプリも招待コードのコピーボタン付きだから、気になったらすぐ始められるよ✨</p>
-    <div class="card-grid">
-      {newApps.map((a) => <ServiceCard article={a} />)}
+    <h2 id="method">スコアの算出方法 📐 HOW WE SCORE</h2>
+    <div class="method-box">
+      <p><strong>このページのスコアは、編集部が公式に確認できる事実だけから算出した「編集スコア」です。</strong>実際にサービスを使って検証・実測した結果ではありません。「検証スコア」という言い方で実測と誤解されないよう、算出式をここに全部公開します。</p>
+      <ul>
+        <li><strong>特典額スコア（100点満点）</strong>：特典を円に換算し、対数スケールで換算しています（最大額の楽天モバイル13,000円分を100点とする）。ポイントの換算には公式レート（ワラウ1pt＝1円、ハピタス1P＝1円、サンポ110pt≒1円など）を使っています。金額に換算できない特典（割引率・トークン・アイテム・金額が公表されていないもの・換算レートが公式未確認のもの）は、中位の<strong>50点</strong>として扱います。</li>
+        <li><strong>条件の手軽さスコア（100点満点）</strong>：公式に確認できる達成条件の項目数から算出します（項目が1件なら100点、2件で74点、3件で59点、4件で49点、5件で42点）。条件の文章の難しさそのものを実測したものではありません。</li>
+        <li><strong>期限の余裕スコア（100点満点）</strong>：キャンペーン期限までの残り日数×2（上限90点）です。期限が公表されていない恒常的な特典は、中位の<strong>50点</strong>として扱います。</li>
+        <li><strong>総合スコア</strong>：特典額50%＋条件の手軽さ30%＋期限の余裕20%の加重平均です。</li>
+        <li><strong>同点の並び</strong>：スコアが同点の場合は、編集部のおすすめ優先度（Freecash → ワラウ → TikTok → TikTok Lite → モッピー → ハピタス → その他）で並べています。</li>
+      </ul>
+      <p>特典額・条件・期限の事実は、{verifiedLabel}に各サービスの公式情報を確認したものです。条件が変わればスコアも変わるので、更新のたびに再計算しています。</p>
     </div>
 
-    <h2 id="catbest">カテゴリ別ランキング 🎀 BY CATEGORY</h2>
-    <p>「やりたいことが決まってる！」って子はこちらから見てね💡 カテゴリの中での特典額順に並べたよ♪</p>
-    {catOrder.map((cat) => (
-      <div>
-        <h3>{CATEGORY_NAMES[cat]}部門</h3>
-        <ul>
-          {RANKING.filter((r) => r.category === cat).map((r) => (
-            <li><a href={`/mea-ranking/articles/${r.slug}/`}>{r.name}</a> {r.benefit}</li>
-          ))}
-        </ul>
-      </div>
-    ))}
-
     <h2 id="howto">特典のもらい方 💡 HOW TO</h2>
-    <p>どのサービスも基本はこの3ステップだよ♪ メアと一緒にやってみよう💖</p>
+    <p>どのサービスも基本はこの3ステップだよ♪</p>
     <ol class="steps">
-      <li><strong>ランキングから選ぶ</strong>：特典額と条件を見比べて、登録したいサービスを決めてね。まずはトップ3＋Freecashがメアのおすすめだよ✨</li>
+      <li><strong>ランキングから選ぶ</strong>：重視したいスコアで並び替えて、特典と条件を見比べて決めてね。</li>
       <li><strong>コードをコピー／リンクを開く</strong>：コード入力型はコピーボタンでコードを控えてね。リンク型は「登録する」ボタンからそのまま進めばOKだよ♪</li>
-      <li><strong>登録して条件を達成</strong>：各サービスの条件（登録・利用・支払いなど）を満たすと特典が付与されるよ。条件は各記事ページで確認してね💡</li>
+      <li><strong>登録して条件を達成</strong>：各サービスの条件（登録・利用・支払いなど）を満たすと特典が付与されるよ。条件は各行の「条件を見る」と詳細ページで確認してね💡</li>
     </ol>
 
     <h2 id="faq">よくある質問 ❓ FAQ</h2>
@@ -212,33 +281,158 @@ const catOrder = ['point-sites', 'sns-video', 'payment-bank', 'game-entertainmen
       ))}
     </ul>
 
-    <h2>📂 カテゴリー</h2>
-    <ul>
-      {CATEGORIES.map((c) => (
-        <li><a href={`/mea-ranking/categories/${c.slug}/`}>{c.name}</a>（{byCategory(c.slug).length}）</li>
-      ))}
-      <li><a href="/mea-ranking/#ranking">特典ランキング</a>（13）</li>
-      <li><a href="/mea-ranking/faq/">よくある質問</a>（6）</li>
-    </ul>
-
-    <h2>🔥 人気の紹介コード</h2>
-    <ul>
-      <li><a href="/mea-ranking/articles/freecash/">Freecash 3BQLXB</a> 初回DLで1,430円分</li>
-      <li><a href="/mea-ranking/articles/warau/">ワラウ bEs7</a> 2,500pt</li>
-      <li><a href="/mea-ranking/articles/tiktok/">TikTok 284097117</a> 6,000円分</li>
-      <li><a href="/mea-ranking/articles/tiktok-lite/">TikTok Lite 890270647</a> 1,400円分</li>
-      <li><a href="/mea-ranking/articles/moppy/">モッピー 7xaGA123</a> 7,000P</li>
-      <li><a href="/mea-ranking/articles/hapitas/">ハピタス INXAHV</a> 2,300円分</li>
-      <li><a href="/mea-ranking/articles/rakuten-mobile/">楽天モバイル</a> 13,000pt</li>
-    </ul>
-
     <h2>🌐 全媒体の入口</h2>
     <p><a href={SITE.hubUrl} target="_blank" rel="noopener">ポイ活ポータル（トップページ）</a> — ホームページ・ブログ・掲示板・note・Xなど、メアの媒体はここからたどれます♪</p>
 
     <h2>🎀 このランキングについて</h2>
-    <p>ポイ活が大好きなメアが、私が実際に使っている紹介コードだけを特典額の大きい順に並べたランキングだよ💖 特典額や条件が変わったら随時更新するね♪ まずはトップ3＋Freecashから始めるのがおすすめだよ✨</p>
+    <p>ポイ活が大好きなメアが、私が実際に使っている紹介コードだけを、編集スコアで比べられるようにまとめたランキングだよ💖 特典額や条件が変わったら随時更新するね♪</p>
     <p><a href="/mea-ranking/about/">運営者情報を見る →</a></p>
 
     <AdSlot position="bottom" />
   </div>
+
+  <script type="application/json" id="rank-data" set:html={JSON.stringify(clientData)} />
+  <script>
+    // 並び替え：選択したスコアで、ヒーローの1位・ベスト3・全件表を連動して並び替える。
+    // 並び順の決定式は src/data/scores.ts の sortServices と同一（スコア降順→おすすめ優先度→元の並び）。
+    const AXIS_LABELS_JS: Record<string, string> = {
+      total: '総合スコア',
+      benefit: '特典額',
+      ease: '条件の手軽さ',
+      deadline: '期限の余裕',
+    };
+    interface RankItem {
+      slug: string;
+      name: string;
+      benefit: string;
+      code: string | null;
+      friendCode: string | null;
+      url: string | null;
+      scores: { total: number; benefit: number; ease: number; deadline: number };
+      priority: number;
+      index: number;
+    }
+    const dataEl = document.getElementById('rank-data');
+    const services: RankItem[] = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
+    const bySlug = new Map(services.map((s) => [s.slug, s]));
+    const sortedBy = (axis: string): RankItem[] =>
+      [...services].sort(
+        (a, b) =>
+          (b.scores as Record<string, number>)[axis] - (a.scores as Record<string, number>)[axis] ||
+          a.priority - b.priority ||
+          a.index - b.index,
+      );
+
+    const esc = (v: string) =>
+      v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    const codeChipHtml = (s: RankItem): string => {
+      if (!s.code) return '';
+      let html = `<span class="code-chip">招待コード：<code>${esc(s.code)}</code> <button class="copy-btn" type="button" data-copy="${esc(s.code)}" data-service="${esc(s.slug)}"><span class="copy-label">コピー</span></button></span>`;
+      if (s.friendCode) {
+        html += `<span class="code-chip">友達招待コード：<code>${esc(s.friendCode)}</code> <button class="copy-btn" type="button" data-copy="${esc(s.friendCode)}" data-service="${esc(s.slug)}"><span class="copy-label">コピー</span></button></span>`;
+      }
+      return html;
+    };
+
+    const ctaHtml = (s: RankItem, placement: string, label: string): string =>
+      s.url
+        ? `<a class="register-btn${placement === 'hero' ? ' hero-cta-btn' : ''}" href="${esc(s.url)}" target="_blank" rel="sponsored noopener" data-ref-service="${esc(s.slug)}" data-ref-placement="${placement}" data-service="${esc(s.slug)}" data-position="${placement}">${label}</a>`
+        : `<a class="register-btn${placement === 'hero' ? ' hero-cta-btn' : ''}" href="/mea-ranking/articles/${esc(s.slug)}/">${label}</a>`;
+
+    const scoreLinesHtml = (s: RankItem): string => {
+      const line = (label: string, v: number) =>
+        `<div class="score-line"><span>${label}</span><span class="score-bar"><i style="width:${v}%"></i></span><b>${v}</b></div>`;
+      return (
+        line('総合', s.scores.total) +
+        line('特典額', s.scores.benefit) +
+        line('手軽さ', s.scores.ease) +
+        line('期限', s.scores.deadline)
+      );
+    };
+
+    const bestCardHtml = (s: RankItem, i: number): string => `
+      <article class="best-card${i === 0 ? ' is-first' : ''}">
+        <p class="best-rank">${i === 0 ? '👑 ' : ''}${i + 1}位</p>
+        <h3 class="best-name">${esc(s.name)}</h3>
+        <p class="best-benefit">${esc(s.benefit)}</p>
+        <div class="score-lines">${scoreLinesHtml(s)}</div>
+        ${s.code ? `<p class="best-code">招待コード：<code>${esc(s.code)}</code> <button class="copy-btn" type="button" data-copy="${esc(s.code)}" data-service="${esc(s.slug)}"><span class="copy-label">コピー</span></button>${s.friendCode ? `<br />友達招待コード：<code>${esc(s.friendCode)}</code> <button class="copy-btn" type="button" data-copy="${esc(s.friendCode)}" data-service="${esc(s.slug)}"><span class="copy-label">コピー</span></button>` : ''}</p>` : ''}
+        ${ctaHtml(s, 'best3', '登録する')}
+        <p class="best-detail"><a href="/mea-ranking/articles/${esc(s.slug)}/">${esc(s.name)}の条件・詳細を見る →</a></p>
+      </article>`;
+
+    const applySort = (axis: string) => {
+      const list = sortedBy(axis);
+      const firstItem = list[0];
+      if (!firstItem) return;
+      // ヒーロー（結論）の1位を連動
+      const setText = (id: string, v: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = v;
+      };
+      setText('hero-axis-label', AXIS_LABELS_JS[axis] || '');
+      setText('hero-name', firstItem.name);
+      setText('hero-benefit', firstItem.benefit);
+      const heroScores = document.getElementById('hero-scores');
+      if (heroScores) {
+        heroScores.innerHTML =
+          `<span>総合 <b>${firstItem.scores.total}</b></span>` +
+          `<span>特典額 <b>${firstItem.scores.benefit}</b></span>` +
+          `<span>手軽さ <b>${firstItem.scores.ease}</b></span>` +
+          `<span>期限 <b>${firstItem.scores.deadline}</b></span>`;
+      }
+      const heroCode = document.getElementById('hero-code');
+      if (heroCode) heroCode.innerHTML = codeChipHtml(firstItem);
+      const heroCta = document.getElementById('hero-cta');
+      if (heroCta) {
+        heroCta.innerHTML = ctaHtml(
+          firstItem,
+          'hero',
+          firstItem.url ? `${firstItem.name}に登録する` : `${firstItem.name}の詳細を見る`,
+        );
+      }
+      setText(
+        'sort-conclusion',
+        `「${AXIS_LABELS_JS[axis]}」で並べると、1位は${firstItem.name}（${firstItem.benefit}）だよ。`,
+      );
+      // ベスト3を再描画
+      const best3El = document.getElementById('best3');
+      if (best3El) best3El.innerHTML = list.slice(0, 3).map(bestCardHtml).join('');
+      // 全件表の行を並び替え＋順位バッジとスコア強調を更新
+      const tbody = document.getElementById('rank-tbody');
+      if (tbody) {
+        const rows = new Map<string, HTMLTableRowElement>();
+        tbody.querySelectorAll('tr').forEach((tr) => {
+          const slug = tr.getAttribute('data-slug');
+          if (slug) rows.set(slug, tr as HTMLTableRowElement);
+        });
+        list.forEach((s, i) => {
+          const tr = rows.get(s.slug);
+          if (!tr) return;
+          const badge = tr.querySelector('.rank-badge');
+          if (badge) badge.textContent = `${i + 1}位`;
+          tr.querySelectorAll('[data-axis-cell]').forEach((cell) => {
+            cell.classList.toggle('is-active', cell.getAttribute('data-axis-cell') === axis);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+      // チップの選択状態
+      document.querySelectorAll('.sort-chip').forEach((chip) => {
+        chip.setAttribute('aria-pressed', chip.getAttribute('data-axis') === axis ? 'true' : 'false');
+        chip.classList.toggle('is-selected', chip.getAttribute('data-axis') === axis);
+      });
+    };
+
+    document.querySelectorAll('.sort-chip').forEach((chip) => {
+      if (chip.getAttribute('data-axis') === 'total') chip.classList.add('is-selected');
+      chip.addEventListener('click', () => {
+        const axis = chip.getAttribute('data-axis');
+        if (axis) applySort(axis);
+      });
+    });
+    // bySlug は将来の拡張用に保持（未使用でもエラーにしない）
+    void bySlug;
+  </script>
 </BaseLayout>

@@ -76,7 +76,7 @@ const organizationLd = {
         <nav class="main-nav" aria-label="メインナビゲーション">
           <a href="/mea-ranking/">トップ</a>
           <a href="/mea-ranking/#ranking">ランキング表</a>
-          <a href="/mea-ranking/#new-apps">新着アプリ</a>
+          <a href="/mea-ranking/#method">スコアの算出方法</a>
           <a href="/mea-ranking/categories/point-sites/">ポイントサイト</a>
           <a href="/mea-ranking/categories/sns-video/">SNS・動画</a>
           <a href="/mea-ranking/categories/game-entertainment/">ゲーム・エンタメ</a>
@@ -129,8 +129,14 @@ const organizationLd = {
           if (href.includes('mea-keijiban')) {
             sendGaEvent('board_click', { from_site: location.hostname });
           }
+          // 紹介リンクのクリック計測（再構築計画の計測基盤）：data-ref-service を持つ外部紹介リンクのみ対象。
+          // パラメータは service／placement／site_id。紹介先URL自体は変更しない。内部リンクには付けない。
+          const refService = anchor.getAttribute('data-ref-service');
+          if (refService) {
+            sendGaEvent('referral_click', { service: refService, placement: anchor.getAttribute('data-ref-placement') || '', site_id: 's03' });
+          }
           const relTokens = (anchor.getAttribute('rel') || '').split(/\s+/);
-          if (relTokens.includes('sponsored')) {
+          if (!refService && relTokens.includes('sponsored')) {
             sendGaEvent('referral_click', { service: anchor.getAttribute('data-service') || gaServiceFromPath(), page_type: gaPageType });
           }
           if (anchor.classList.contains('register-btn') || anchor.classList.contains('btn-primary')) {
