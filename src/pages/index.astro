@@ -29,11 +29,11 @@ const ROW_CONDITIONS: Record<string, string> = {
   orikuji: '招待コード入力で、500ptプレゼント。0円でも楽しめる',
 };
 
-// ランキング表の行内に表示する公式細型バナー（旧サイトと同じ3枚）
+// ランキング表の行内に表示する自作細型バナー（2026-11-24 公式バナーから作り直し）
 const ROW_BANNERS: Record<string, { src: string; alt: string }> = {
-  moppy: { src: '/mea-ranking/images/banner-official-moppy.jpg', alt: 'モッピー公式バナー' },
-  warau: { src: '/mea-ranking/images/banner-official-warau.png', alt: 'ワラウ公式バナー' },
-  hapitas: { src: '/mea-ranking/images/banner-official-hapitas.png', alt: 'ハピタス公式バナー' },
+  moppy: { src: '/mea-ranking/images/banner-moppy.jpg', alt: 'モッピーの紹介バナー' },
+  warau: { src: '/mea-ranking/images/banner-warau.jpg', alt: 'ワラウの紹介バナー' },
+  hapitas: { src: '/mea-ranking/images/banner-hapitas.jpg', alt: 'ハピタスの紹介バナー' },
 };
 
 const itemList = [...RANKING].map((r, i) => ({

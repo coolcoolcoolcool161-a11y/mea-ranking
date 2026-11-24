@@ -6,8 +6,8 @@ category: point-sites
 benefit: "最大2,300円分"
 code: "INXAHV"
 url: "https://hapitas.jp/appinvite?i=26164523"
-image: "/images/banner-official-hapitas.png"
-imageAlt: "ハピタス公式バナー"
+image: "/images/banner-hapitas.jpg"
+imageAlt: "ハピタスの紹介バナー"
 dateModified: "2026-11-19"
 rank: 5
 conditions: "紹介URLから登録してください（コード入力は不要です）。登録と条件達成で最大2,300P（1P＝1円）です。"

@@ -6,8 +6,8 @@ category: point-sites
 benefit: "最大2,500pt"
 code: "bEs7"
 url: "https://www.warau.jp/friend/reg/bEs5"
-image: "/images/banner-official-warau.png"
-imageAlt: "ワラウ公式バナー"
+image: "/images/banner-warau.jpg"
+imageAlt: "ワラウの紹介バナー"
 dateModified: "2026-11-19"
 rank: 4
 conditions: "紹介リンクから登録すると自動適用されます。1pt＝1円、300ptから交換できます。"
