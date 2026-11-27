@@ -599,7 +599,6 @@ html[data-theme="dark"] .copy-btn:hover { background: #3d2431; }
 html[data-theme="dark"] ::selection { background: #7a2b50; }
 html[data-theme="dark"] .hero,
 html[data-theme="dark"] .benefit-badge { border-color: var(--color-primary-line); }
-html[data-theme="dark"] .pace-banner { box-shadow: 0 4px 14px rgba(0,0,0,.5); }
 html[data-theme="dark"] .pr-box { background: var(--color-notice-bg); border-color: var(--color-notice-line); }
 html[data-theme="dark"] .theme-toggle { background: var(--color-surface-raised); }
 html[data-theme="dark"] .theme-toggle:hover { background: var(--color-primary-soft); }
