@@ -5,7 +5,7 @@ export const SITE = {
   operator: 'メア',
   siteUrl: 'https://mea-poikatsu.github.io/mea-ranking',
   description:
-    '紹介コード・招待コードのランキング全19サービス比較。楽天モバイル13,000pt・モッピー7,000P・TikTok 6,000円分・ワラウ最大2,500pt・ハピタス最大2,300P・Freecash初回DLで1,430円分などを、編集スコア（特典額・条件の手軽さ・期限の余裕）で並び替えできます。',
+    '紹介コード・招待コードのランキング全19サービス比較。楽天モバイル13,000pt・モッピー7,000P・TikTok 6,000円分・ワラウ最大2,500pt・ハピタス最大2,300P・Freecash毎日のルーレットで無条件ボーナスなどを、編集スコア（特典額・条件の手軽さ・期限の余裕）で並び替えできます。',
   dateModified: '2026-11-25',
   gaMeasurementId: 'G-8BB8V3DRW8',
   xAccount: 'https://x.com/pppppuririn',
@@ -40,8 +40,8 @@ export const RANKING = [
   { rank: 3, slug: 'tiktok', name: 'TikTok', benefit: '6,000円分', category: 'sns-video' },
   { rank: 4, slug: 'warau', name: 'ワラウ', benefit: '最大2,500pt', category: 'point-sites' },
   { rank: 5, slug: 'hapitas', name: 'ハピタス', benefit: '最大2,300円分', category: 'point-sites' },
-  { rank: 6, slug: 'olive', name: 'SMBC Olive', benefit: '1,000円相当', category: 'payment-bank' },
-  { rank: 7, slug: 'freecash', name: 'Freecash', benefit: '初回DLで1,430円分', category: 'game-entertainment', featured: true },
+  { rank: 6, slug: 'olive', name: 'SMBC Olive', benefit: 'Vポイント1,000pt', category: 'payment-bank' },
+  { rank: 7, slug: 'freecash', name: 'Freecash', benefit: '毎日のルーレットで無条件ボーナス', category: 'game-entertainment', featured: true },
   { rank: 8, slug: 'tiktok-lite', name: 'TikTok Lite', benefit: '1,400円分', category: 'sns-video' },
   { rank: 9, slug: 'pokekatsu', name: 'ポケカツ', benefit: '初回チャージ90%OFF', category: 'game-entertainment' },
   { rank: 10, slug: 'mercari', name: 'メルカリ', benefit: '500円分', category: 'shopping' },
@@ -90,7 +90,7 @@ export const FAQS = [
   },
   {
     q: 'Freecashは、なぜイチオシなのですか？',
-    a: '特典は初回DLで1,430円分と中位なんだけど、毎日のルーレットやログインでも報酬がもらえるから、条件達成のハードルが低くてスマホだけで完結するの✨ 金額の大きさだけじゃなくて「もらいやすさ」も含めて、メアがおすすめしているよ💖',
+    a: '金額だけ見ると中位なんだけど、毎日のルーレットやログインでも報酬がもらえるから、条件達成のハードルが低くてスマホだけで完結するの✨ 金額の大きさだけじゃなくて「もらいやすさ」も含めて、メアがおすすめしているよ💖',
   },
   {
     q: '複数のサービスに登録しても大丈夫ですか？',
